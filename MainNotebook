@@ -1,0 +1,2755 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Election 2016: An Exploratory Data Analysis\n",
+    "\n",
+    "#### Table of Contents\n",
+    "1. Environment Setup\n",
+    "2. Loading Data\n",
+    "3. Plotting all data\n",
+    "    - Scatter plots\n",
+    "    - Continuous Graph with Error Bars\n",
+    "    - Bubble charts\n",
+    "4. Plotting by Pollster Grade\n",
+    "    - Scatter Plots\n",
+    "    - Boxplots\n",
+    "    - Bubble Charts\n",
+    "5. Plotting by State\n",
+    "    - Categorical Scatter Plot\n",
+    "    - Chloropleth Maps\n",
+    "    \n",
+    "## Environment Setup\n",
+    "Information regarding environment setup can be found under Prerequisites on the [README](../master/README.md).\n",
+    "\n",
+    "## Loading Data\n",
+    "We start off by loading the packages that we want to use."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {
+    "collapsed": false,
+    "scrolled": true
+   },
+   "outputs": [],
+   "source": [
+    "import numpy as np\n",
+    "import pandas as pd\n",
+    "#import matplotlib.pyplot as plt\n",
+    "from plotly import tools\n",
+    "import plotly.plotly as py\n",
+    "import plotly.graph_objs as go\n",
+    "pd.set_option('display.max_columns', 100) #overrides default to display up to 100 columns in dataframes"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "We load the dataset into a [Pandas](http://pandas.pydata.org/) dataframe (the preferred tool when working with data in Python) and run some basic commands."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {
+    "collapsed": false,
+    "scrolled": false
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>cycle</th>\n",
+       "      <th>branch</th>\n",
+       "      <th>type</th>\n",
+       "      <th>matchup</th>\n",
+       "      <th>forecastdate</th>\n",
+       "      <th>state</th>\n",
+       "      <th>startdate</th>\n",
+       "      <th>enddate</th>\n",
+       "      <th>pollster</th>\n",
+       "      <th>grade</th>\n",
+       "      <th>samplesize</th>\n",
+       "      <th>population</th>\n",
+       "      <th>poll_wt</th>\n",
+       "      <th>rawpoll_clinton</th>\n",
+       "      <th>rawpoll_trump</th>\n",
+       "      <th>rawpoll_johnson</th>\n",
+       "      <th>rawpoll_mcmullin</th>\n",
+       "      <th>adjpoll_clinton</th>\n",
+       "      <th>adjpoll_trump</th>\n",
+       "      <th>adjpoll_johnson</th>\n",
+       "      <th>adjpoll_mcmullin</th>\n",
+       "      <th>multiversions</th>\n",
+       "      <th>url</th>\n",
+       "      <th>poll_id</th>\n",
+       "      <th>question_id</th>\n",
+       "      <th>createddate</th>\n",
+       "      <th>timestamp</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>2016</td>\n",
+       "      <td>President</td>\n",
+       "      <td>polls-plus</td>\n",
+       "      <td>Clinton vs. Trump vs. Johnson</td>\n",
+       "      <td>11/8/16</td>\n",
+       "      <td>U.S.</td>\n",
+       "      <td>11/3/2016</td>\n",
+       "      <td>11/6/2016</td>\n",
+       "      <td>ABC News/Washington Post</td>\n",
+       "      <td>A+</td>\n",
+       "      <td>2220.0</td>\n",
+       "      <td>lv</td>\n",
+       "      <td>8.720654</td>\n",
+       "      <td>47.00</td>\n",
+       "      <td>43.00</td>\n",
+       "      <td>4.00</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>45.20163</td>\n",
+       "      <td>41.72430</td>\n",
+       "      <td>4.626221</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>https://www.washingtonpost.com/news/the-fix/wp...</td>\n",
+       "      <td>48630</td>\n",
+       "      <td>76192</td>\n",
+       "      <td>11/7/16</td>\n",
+       "      <td>09:35:33  8 Nov 2016</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>2016</td>\n",
+       "      <td>President</td>\n",
+       "      <td>polls-plus</td>\n",
+       "      <td>Clinton vs. Trump vs. Johnson</td>\n",
+       "      <td>11/8/16</td>\n",
+       "      <td>U.S.</td>\n",
+       "      <td>11/1/2016</td>\n",
+       "      <td>11/7/2016</td>\n",
+       "      <td>Google Consumer Surveys</td>\n",
+       "      <td>B</td>\n",
+       "      <td>26574.0</td>\n",
+       "      <td>lv</td>\n",
+       "      <td>7.628472</td>\n",
+       "      <td>38.03</td>\n",
+       "      <td>35.69</td>\n",
+       "      <td>5.46</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>43.34557</td>\n",
+       "      <td>41.21439</td>\n",
+       "      <td>5.175792</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>https://datastudio.google.com/u/0/#/org//repor...</td>\n",
+       "      <td>48847</td>\n",
+       "      <td>76443</td>\n",
+       "      <td>11/7/16</td>\n",
+       "      <td>09:35:33  8 Nov 2016</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>2016</td>\n",
+       "      <td>President</td>\n",
+       "      <td>polls-plus</td>\n",
+       "      <td>Clinton vs. Trump vs. Johnson</td>\n",
+       "      <td>11/8/16</td>\n",
+       "      <td>U.S.</td>\n",
+       "      <td>11/2/2016</td>\n",
+       "      <td>11/6/2016</td>\n",
+       "      <td>Ipsos</td>\n",
+       "      <td>A-</td>\n",
+       "      <td>2195.0</td>\n",
+       "      <td>lv</td>\n",
+       "      <td>6.424334</td>\n",
+       "      <td>42.00</td>\n",
+       "      <td>39.00</td>\n",
+       "      <td>6.00</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>42.02638</td>\n",
+       "      <td>38.81620</td>\n",
+       "      <td>6.844734</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>http://projects.fivethirtyeight.com/polls/2016...</td>\n",
+       "      <td>48922</td>\n",
+       "      <td>76636</td>\n",
+       "      <td>11/8/16</td>\n",
+       "      <td>09:35:33  8 Nov 2016</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>2016</td>\n",
+       "      <td>President</td>\n",
+       "      <td>polls-plus</td>\n",
+       "      <td>Clinton vs. Trump vs. Johnson</td>\n",
+       "      <td>11/8/16</td>\n",
+       "      <td>U.S.</td>\n",
+       "      <td>11/4/2016</td>\n",
+       "      <td>11/7/2016</td>\n",
+       "      <td>YouGov</td>\n",
+       "      <td>B</td>\n",
+       "      <td>3677.0</td>\n",
+       "      <td>lv</td>\n",
+       "      <td>6.087135</td>\n",
+       "      <td>45.00</td>\n",
+       "      <td>41.00</td>\n",
+       "      <td>5.00</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>45.65676</td>\n",
+       "      <td>40.92004</td>\n",
+       "      <td>6.069454</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>https://d25d2506sfb94s.cloudfront.net/cumulus_...</td>\n",
+       "      <td>48687</td>\n",
+       "      <td>76262</td>\n",
+       "      <td>11/7/16</td>\n",
+       "      <td>09:35:33  8 Nov 2016</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>2016</td>\n",
+       "      <td>President</td>\n",
+       "      <td>polls-plus</td>\n",
+       "      <td>Clinton vs. Trump vs. Johnson</td>\n",
+       "      <td>11/8/16</td>\n",
+       "      <td>U.S.</td>\n",
+       "      <td>11/3/2016</td>\n",
+       "      <td>11/6/2016</td>\n",
+       "      <td>Gravis Marketing</td>\n",
+       "      <td>B-</td>\n",
+       "      <td>16639.0</td>\n",
+       "      <td>rv</td>\n",
+       "      <td>5.316449</td>\n",
+       "      <td>47.00</td>\n",
+       "      <td>43.00</td>\n",
+       "      <td>3.00</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>46.84089</td>\n",
+       "      <td>42.33184</td>\n",
+       "      <td>3.726098</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>http://www.gravispolls.com/2016/11/final-natio...</td>\n",
+       "      <td>48848</td>\n",
+       "      <td>76444</td>\n",
+       "      <td>11/7/16</td>\n",
+       "      <td>09:35:33  8 Nov 2016</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "   cycle     branch        type                        matchup forecastdate  \\\n",
+       "0   2016  President  polls-plus  Clinton vs. Trump vs. Johnson      11/8/16   \n",
+       "1   2016  President  polls-plus  Clinton vs. Trump vs. Johnson      11/8/16   \n",
+       "2   2016  President  polls-plus  Clinton vs. Trump vs. Johnson      11/8/16   \n",
+       "3   2016  President  polls-plus  Clinton vs. Trump vs. Johnson      11/8/16   \n",
+       "4   2016  President  polls-plus  Clinton vs. Trump vs. Johnson      11/8/16   \n",
+       "\n",
+       "  state  startdate    enddate                  pollster grade  samplesize  \\\n",
+       "0  U.S.  11/3/2016  11/6/2016  ABC News/Washington Post    A+      2220.0   \n",
+       "1  U.S.  11/1/2016  11/7/2016   Google Consumer Surveys     B     26574.0   \n",
+       "2  U.S.  11/2/2016  11/6/2016                     Ipsos    A-      2195.0   \n",
+       "3  U.S.  11/4/2016  11/7/2016                    YouGov     B      3677.0   \n",
+       "4  U.S.  11/3/2016  11/6/2016          Gravis Marketing    B-     16639.0   \n",
+       "\n",
+       "  population   poll_wt  rawpoll_clinton  rawpoll_trump  rawpoll_johnson  \\\n",
+       "0         lv  8.720654            47.00          43.00             4.00   \n",
+       "1         lv  7.628472            38.03          35.69             5.46   \n",
+       "2         lv  6.424334            42.00          39.00             6.00   \n",
+       "3         lv  6.087135            45.00          41.00             5.00   \n",
+       "4         rv  5.316449            47.00          43.00             3.00   \n",
+       "\n",
+       "   rawpoll_mcmullin  adjpoll_clinton  adjpoll_trump  adjpoll_johnson  \\\n",
+       "0               NaN         45.20163       41.72430         4.626221   \n",
+       "1               NaN         43.34557       41.21439         5.175792   \n",
+       "2               NaN         42.02638       38.81620         6.844734   \n",
+       "3               NaN         45.65676       40.92004         6.069454   \n",
+       "4               NaN         46.84089       42.33184         3.726098   \n",
+       "\n",
+       "   adjpoll_mcmullin multiversions  \\\n",
+       "0               NaN           NaN   \n",
+       "1               NaN           NaN   \n",
+       "2               NaN           NaN   \n",
+       "3               NaN           NaN   \n",
+       "4               NaN           NaN   \n",
+       "\n",
+       "                                                 url  poll_id  question_id  \\\n",
+       "0  https://www.washingtonpost.com/news/the-fix/wp...    48630        76192   \n",
+       "1  https://datastudio.google.com/u/0/#/org//repor...    48847        76443   \n",
+       "2  http://projects.fivethirtyeight.com/polls/2016...    48922        76636   \n",
+       "3  https://d25d2506sfb94s.cloudfront.net/cumulus_...    48687        76262   \n",
+       "4  http://www.gravispolls.com/2016/11/final-natio...    48848        76444   \n",
+       "\n",
+       "  createddate             timestamp  \n",
+       "0     11/7/16  09:35:33  8 Nov 2016  \n",
+       "1     11/7/16  09:35:33  8 Nov 2016  \n",
+       "2     11/8/16  09:35:33  8 Nov 2016  \n",
+       "3     11/7/16  09:35:33  8 Nov 2016  \n",
+       "4     11/7/16  09:35:33  8 Nov 2016  "
+      ]
+     },
+     "execution_count": 2,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df = pd.read_csv('http://projects.fivethirtyeight.com/general-model/president_general_polls_2016.csv')\n",
+    "df.head() #display the first five rows of dataframe"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {
+    "collapsed": false,
+    "scrolled": false
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Number of rows (polls): 12624\n",
+      "Number of columns (categories): 27\n",
+      "\n",
+      "Number of empty values for each column:\n",
+      "cycle                   0\n",
+      "branch                  0\n",
+      "type                    0\n",
+      "matchup                 0\n",
+      "forecastdate            0\n",
+      "state                   0\n",
+      "startdate               0\n",
+      "enddate                 0\n",
+      "pollster                0\n",
+      "grade                1287\n",
+      "samplesize              3\n",
+      "population              0\n",
+      "poll_wt                 0\n",
+      "rawpoll_clinton         0\n",
+      "rawpoll_trump           0\n",
+      "rawpoll_johnson      4227\n",
+      "rawpoll_mcmullin    12534\n",
+      "adjpoll_clinton         0\n",
+      "adjpoll_trump           0\n",
+      "adjpoll_johnson      4227\n",
+      "adjpoll_mcmullin    12534\n",
+      "multiversions       12588\n",
+      "url                     3\n",
+      "poll_id                 0\n",
+      "question_id             0\n",
+      "createddate             0\n",
+      "timestamp               0\n",
+      "dtype: int64\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(\"Number of rows (polls): \" + str(df.shape[0]))\n",
+    "print(\"Number of columns (categories): \" + str(df.shape[1]))\n",
+    "\n",
+    "print(\"\\nNumber of empty values for each column:\")\n",
+    "print(df.isnull().sum())"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "We see that there are 12624 polls and 27 categories of data. Of these, we can subset the dataframe to select only the categories that we're interested in. Let's go ahead and do that:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>type</th>\n",
+       "      <th>state</th>\n",
+       "      <th>enddate</th>\n",
+       "      <th>pollster</th>\n",
+       "      <th>grade</th>\n",
+       "      <th>samplesize</th>\n",
+       "      <th>population</th>\n",
+       "      <th>adjpoll_clinton</th>\n",
+       "      <th>adjpoll_trump</th>\n",
+       "      <th>adjpoll_johnson</th>\n",
+       "      <th>adjpoll_mcmullin</th>\n",
+       "      <th>poll_id</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>polls-plus</td>\n",
+       "      <td>U.S.</td>\n",
+       "      <td>11/6/2016</td>\n",
+       "      <td>ABC News/Washington Post</td>\n",
+       "      <td>A+</td>\n",
+       "      <td>2220.0</td>\n",
+       "      <td>lv</td>\n",
+       "      <td>45.20163</td>\n",
+       "      <td>41.72430</td>\n",
+       "      <td>4.626221</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>48630</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>polls-plus</td>\n",
+       "      <td>U.S.</td>\n",
+       "      <td>11/7/2016</td>\n",
+       "      <td>Google Consumer Surveys</td>\n",
+       "      <td>B</td>\n",
+       "      <td>26574.0</td>\n",
+       "      <td>lv</td>\n",
+       "      <td>43.34557</td>\n",
+       "      <td>41.21439</td>\n",
+       "      <td>5.175792</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>48847</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>polls-plus</td>\n",
+       "      <td>U.S.</td>\n",
+       "      <td>11/6/2016</td>\n",
+       "      <td>Ipsos</td>\n",
+       "      <td>A-</td>\n",
+       "      <td>2195.0</td>\n",
+       "      <td>lv</td>\n",
+       "      <td>42.02638</td>\n",
+       "      <td>38.81620</td>\n",
+       "      <td>6.844734</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>48922</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>polls-plus</td>\n",
+       "      <td>U.S.</td>\n",
+       "      <td>11/7/2016</td>\n",
+       "      <td>YouGov</td>\n",
+       "      <td>B</td>\n",
+       "      <td>3677.0</td>\n",
+       "      <td>lv</td>\n",
+       "      <td>45.65676</td>\n",
+       "      <td>40.92004</td>\n",
+       "      <td>6.069454</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>48687</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>polls-plus</td>\n",
+       "      <td>U.S.</td>\n",
+       "      <td>11/6/2016</td>\n",
+       "      <td>Gravis Marketing</td>\n",
+       "      <td>B-</td>\n",
+       "      <td>16639.0</td>\n",
+       "      <td>rv</td>\n",
+       "      <td>46.84089</td>\n",
+       "      <td>42.33184</td>\n",
+       "      <td>3.726098</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>48848</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "         type state    enddate                  pollster grade  samplesize  \\\n",
+       "0  polls-plus  U.S.  11/6/2016  ABC News/Washington Post    A+      2220.0   \n",
+       "1  polls-plus  U.S.  11/7/2016   Google Consumer Surveys     B     26574.0   \n",
+       "2  polls-plus  U.S.  11/6/2016                     Ipsos    A-      2195.0   \n",
+       "3  polls-plus  U.S.  11/7/2016                    YouGov     B      3677.0   \n",
+       "4  polls-plus  U.S.  11/6/2016          Gravis Marketing    B-     16639.0   \n",
+       "\n",
+       "  population  adjpoll_clinton  adjpoll_trump  adjpoll_johnson  \\\n",
+       "0         lv         45.20163       41.72430         4.626221   \n",
+       "1         lv         43.34557       41.21439         5.175792   \n",
+       "2         lv         42.02638       38.81620         6.844734   \n",
+       "3         lv         45.65676       40.92004         6.069454   \n",
+       "4         rv         46.84089       42.33184         3.726098   \n",
+       "\n",
+       "   adjpoll_mcmullin  poll_id  \n",
+       "0               NaN    48630  \n",
+       "1               NaN    48847  \n",
+       "2               NaN    48922  \n",
+       "3               NaN    48687  \n",
+       "4               NaN    48848  "
+      ]
+     },
+     "execution_count": 4,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "categories = ['type', 'state', 'enddate', 'pollster', 'grade', 'samplesize', 'population',\n",
+    "             'adjpoll_clinton', 'adjpoll_trump', 'adjpoll_johnson', 'adjpoll_mcmullin', 'poll_id']\n",
+    "df2 = df.loc[:, categories]\n",
+    "df2.head()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "*Note: We've decided to use the adjusted poll data (adjpoll) instead of the raw poll data (rawpoll); this will give us a slight adjustment to account for sampling error. This information was found on the FiveThirtyEight website.*\n",
+    "\n",
+    "Awesome! But what is this \"type\" variable? We can tell from `df2.head()` that there's a type called \"polls-plus\", but we can't tell much else."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "['polls-plus' 'now-cast' 'polls-only']\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(df2.loc[:,'type'].unique()) #display unique values of the 'type' factor"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "We can see three unique types of polls. According to the source of the dataset on [FiveThirtyEight](https://fivethirtyeight.com/features/a-users-guide-to-fivethirtyeights-2016-general-election-forecast/):\n",
+    "+ **Polls-plus**: Combines polls with an economic index. Since the economic index implies that this election should be a tossup, it assumes the race will tighten somewhat.\n",
+    "+ **Polls-only**: A simpler, what-you-see-is-what-you-get version of the model. It assumes current polls reflect the best forecast for November, although with a lot of uncertainty.\n",
+    "+ **Now-cast**: A projection of what would happen in a hypothetical election held today. Much more aggressive than the other models.\n",
+    "\n",
+    "We want to work with the simple adjusted poll data, not combined with other data. So we're going to take out all the polls that have been adjusted to \"polls-plus\" and \"now-cast.\""
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>type</th>\n",
+       "      <th>state</th>\n",
+       "      <th>enddate</th>\n",
+       "      <th>pollster</th>\n",
+       "      <th>grade</th>\n",
+       "      <th>samplesize</th>\n",
+       "      <th>population</th>\n",
+       "      <th>adjpoll_clinton</th>\n",
+       "      <th>adjpoll_trump</th>\n",
+       "      <th>adjpoll_johnson</th>\n",
+       "      <th>adjpoll_mcmullin</th>\n",
+       "      <th>poll_id</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>polls-only</td>\n",
+       "      <td>U.S.</td>\n",
+       "      <td>11/6/2016</td>\n",
+       "      <td>ABC News/Washington Post</td>\n",
+       "      <td>A+</td>\n",
+       "      <td>2220.0</td>\n",
+       "      <td>lv</td>\n",
+       "      <td>45.21947</td>\n",
+       "      <td>41.70754</td>\n",
+       "      <td>4.606925</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>48630</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>polls-only</td>\n",
+       "      <td>U.S.</td>\n",
+       "      <td>11/7/2016</td>\n",
+       "      <td>Google Consumer Surveys</td>\n",
+       "      <td>B</td>\n",
+       "      <td>26574.0</td>\n",
+       "      <td>lv</td>\n",
+       "      <td>43.40083</td>\n",
+       "      <td>41.14659</td>\n",
+       "      <td>5.164047</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>48847</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>polls-only</td>\n",
+       "      <td>U.S.</td>\n",
+       "      <td>11/6/2016</td>\n",
+       "      <td>Ipsos</td>\n",
+       "      <td>A-</td>\n",
+       "      <td>2195.0</td>\n",
+       "      <td>lv</td>\n",
+       "      <td>42.01984</td>\n",
+       "      <td>38.74365</td>\n",
+       "      <td>6.816055</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>48922</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>polls-only</td>\n",
+       "      <td>U.S.</td>\n",
+       "      <td>11/7/2016</td>\n",
+       "      <td>YouGov</td>\n",
+       "      <td>B</td>\n",
+       "      <td>3677.0</td>\n",
+       "      <td>lv</td>\n",
+       "      <td>45.68214</td>\n",
+       "      <td>40.90047</td>\n",
+       "      <td>6.118311</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>48687</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>polls-only</td>\n",
+       "      <td>U.S.</td>\n",
+       "      <td>11/6/2016</td>\n",
+       "      <td>Gravis Marketing</td>\n",
+       "      <td>B-</td>\n",
+       "      <td>16639.0</td>\n",
+       "      <td>rv</td>\n",
+       "      <td>46.83107</td>\n",
+       "      <td>42.27754</td>\n",
+       "      <td>3.749071</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>48848</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "         type state    enddate                  pollster grade  samplesize  \\\n",
+       "0  polls-only  U.S.  11/6/2016  ABC News/Washington Post    A+      2220.0   \n",
+       "1  polls-only  U.S.  11/7/2016   Google Consumer Surveys     B     26574.0   \n",
+       "2  polls-only  U.S.  11/6/2016                     Ipsos    A-      2195.0   \n",
+       "3  polls-only  U.S.  11/7/2016                    YouGov     B      3677.0   \n",
+       "4  polls-only  U.S.  11/6/2016          Gravis Marketing    B-     16639.0   \n",
+       "\n",
+       "  population  adjpoll_clinton  adjpoll_trump  adjpoll_johnson  \\\n",
+       "0         lv         45.21947       41.70754         4.606925   \n",
+       "1         lv         43.40083       41.14659         5.164047   \n",
+       "2         lv         42.01984       38.74365         6.816055   \n",
+       "3         lv         45.68214       40.90047         6.118311   \n",
+       "4         rv         46.83107       42.27754         3.749071   \n",
+       "\n",
+       "   adjpoll_mcmullin  poll_id  \n",
+       "0               NaN    48630  \n",
+       "1               NaN    48847  \n",
+       "2               NaN    48922  \n",
+       "3               NaN    48687  \n",
+       "4               NaN    48848  "
+      ]
+     },
+     "execution_count": 6,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df_po = df2[df2.loc[:,'type']=='polls-only'] #create df_po containing only the polls of type 'polls-only'\n",
+    "df_po = df_po.reset_index(drop=True) #reset the dataframe indices, and drop the original indices from memory\n",
+    "df_po.head()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>samplesize</th>\n",
+       "      <th>adjpoll_clinton</th>\n",
+       "      <th>adjpoll_trump</th>\n",
+       "      <th>adjpoll_johnson</th>\n",
+       "      <th>adjpoll_mcmullin</th>\n",
+       "      <th>poll_id</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>count</th>\n",
+       "      <td>4207.000000</td>\n",
+       "      <td>4208.000000</td>\n",
+       "      <td>4208.000000</td>\n",
+       "      <td>2799.000000</td>\n",
+       "      <td>30.000000</td>\n",
+       "      <td>4208.000000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>mean</th>\n",
+       "      <td>1148.216068</td>\n",
+       "      <td>43.322517</td>\n",
+       "      <td>42.654425</td>\n",
+       "      <td>4.651088</td>\n",
+       "      <td>24.508827</td>\n",
+       "      <td>45910.899477</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>std</th>\n",
+       "      <td>2630.856265</td>\n",
+       "      <td>7.097772</td>\n",
+       "      <td>6.948612</td>\n",
+       "      <td>2.472390</td>\n",
+       "      <td>5.235812</td>\n",
+       "      <td>2864.763228</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>min</th>\n",
+       "      <td>35.000000</td>\n",
+       "      <td>17.115890</td>\n",
+       "      <td>4.488276</td>\n",
+       "      <td>-3.677883</td>\n",
+       "      <td>11.028320</td>\n",
+       "      <td>35362.000000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>25%</th>\n",
+       "      <td>447.500000</td>\n",
+       "      <td>40.220230</td>\n",
+       "      <td>38.449348</td>\n",
+       "      <td>3.130344</td>\n",
+       "      <td>23.108497</td>\n",
+       "      <td>45151.750000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>50%</th>\n",
+       "      <td>772.000000</td>\n",
+       "      <td>44.142125</td>\n",
+       "      <td>42.704720</td>\n",
+       "      <td>4.366810</td>\n",
+       "      <td>25.135225</td>\n",
+       "      <td>46384.500000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>75%</th>\n",
+       "      <td>1236.500000</td>\n",
+       "      <td>46.901398</td>\n",
+       "      <td>46.315503</td>\n",
+       "      <td>5.763004</td>\n",
+       "      <td>27.976062</td>\n",
+       "      <td>47741.250000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>max</th>\n",
+       "      <td>84292.000000</td>\n",
+       "      <td>86.713200</td>\n",
+       "      <td>72.376610</td>\n",
+       "      <td>20.357000</td>\n",
+       "      <td>31.574690</td>\n",
+       "      <td>48922.000000</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "         samplesize  adjpoll_clinton  adjpoll_trump  adjpoll_johnson  \\\n",
+       "count   4207.000000      4208.000000    4208.000000      2799.000000   \n",
+       "mean    1148.216068        43.322517      42.654425         4.651088   \n",
+       "std     2630.856265         7.097772       6.948612         2.472390   \n",
+       "min       35.000000        17.115890       4.488276        -3.677883   \n",
+       "25%      447.500000        40.220230      38.449348         3.130344   \n",
+       "50%      772.000000        44.142125      42.704720         4.366810   \n",
+       "75%     1236.500000        46.901398      46.315503         5.763004   \n",
+       "max    84292.000000        86.713200      72.376610        20.357000   \n",
+       "\n",
+       "       adjpoll_mcmullin       poll_id  \n",
+       "count         30.000000   4208.000000  \n",
+       "mean          24.508827  45910.899477  \n",
+       "std            5.235812   2864.763228  \n",
+       "min           11.028320  35362.000000  \n",
+       "25%           23.108497  45151.750000  \n",
+       "50%           25.135225  46384.500000  \n",
+       "75%           27.976062  47741.250000  \n",
+       "max           31.574690  48922.000000  "
+      ]
+     },
+     "execution_count": 7,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df_po.describe() #display summary statistics for numerical variables"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Before we can plot anything, there's an issue that prevents us from being able to place time on the x-axis. The original dataset contained `startdate`, `enddate`, and `forecastdate`; of these three, we've subsetted only the `enddate` into `df2` and `df_po` because it's the most accurate representation of the timeframe of each poll."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "0    11/6/2016\n",
+       "1    11/7/2016\n",
+       "2    11/6/2016\n",
+       "3    11/7/2016\n",
+       "4    11/6/2016\n",
+       "Name: enddate, dtype: object"
+      ]
+     },
+     "execution_count": 8,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df_po.loc[:,'enddate'].head() #view first 5 'enddate' values"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Each date is an `object` type; that means that Python will see these as individual discrete variables instead of a continuous variable of dates. To fix this, we use the `to_datetime` function from Pandas on each of the date entries."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "0   2016-11-06\n",
+       "1   2016-11-07\n",
+       "2   2016-11-06\n",
+       "3   2016-11-07\n",
+       "4   2016-11-06\n",
+       "Name: enddate, dtype: datetime64[ns]"
+      ]
+     },
+     "execution_count": 9,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df_po.loc[:,'enddate'] = pd.to_datetime(df_po.loc[:,'enddate']) #convert 'enddate' into 'datetime' variables\n",
+    "df_po.loc[:, 'enddate'].head()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>enddate</th>\n",
+       "      <th>adjpoll_clinton</th>\n",
+       "      <th>adjpoll_trump</th>\n",
+       "      <th>adjpoll_johnson</th>\n",
+       "      <th>adjpoll_mcmullin</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>2016-11-06</td>\n",
+       "      <td>45.21947</td>\n",
+       "      <td>41.70754</td>\n",
+       "      <td>4.606925</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>2016-11-07</td>\n",
+       "      <td>43.40083</td>\n",
+       "      <td>41.14659</td>\n",
+       "      <td>5.164047</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>2016-11-06</td>\n",
+       "      <td>42.01984</td>\n",
+       "      <td>38.74365</td>\n",
+       "      <td>6.816055</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>2016-11-07</td>\n",
+       "      <td>45.68214</td>\n",
+       "      <td>40.90047</td>\n",
+       "      <td>6.118311</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>2016-11-06</td>\n",
+       "      <td>46.83107</td>\n",
+       "      <td>42.27754</td>\n",
+       "      <td>3.749071</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>5</th>\n",
+       "      <td>2016-11-06</td>\n",
+       "      <td>49.05626</td>\n",
+       "      <td>43.87898</td>\n",
+       "      <td>3.018706</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>6</th>\n",
+       "      <td>2016-11-06</td>\n",
+       "      <td>45.31196</td>\n",
+       "      <td>40.80614</td>\n",
+       "      <td>4.230162</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>7</th>\n",
+       "      <td>2016-11-05</td>\n",
+       "      <td>43.68695</td>\n",
+       "      <td>40.80897</td>\n",
+       "      <td>5.381917</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>8</th>\n",
+       "      <td>2016-11-06</td>\n",
+       "      <td>45.03026</td>\n",
+       "      <td>41.83415</td>\n",
+       "      <td>8.034579</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>9</th>\n",
+       "      <td>2016-11-07</td>\n",
+       "      <td>42.88452</td>\n",
+       "      <td>42.18602</td>\n",
+       "      <td>6.367243</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "     enddate  adjpoll_clinton  adjpoll_trump  adjpoll_johnson  \\\n",
+       "0 2016-11-06         45.21947       41.70754         4.606925   \n",
+       "1 2016-11-07         43.40083       41.14659         5.164047   \n",
+       "2 2016-11-06         42.01984       38.74365         6.816055   \n",
+       "3 2016-11-07         45.68214       40.90047         6.118311   \n",
+       "4 2016-11-06         46.83107       42.27754         3.749071   \n",
+       "5 2016-11-06         49.05626       43.87898         3.018706   \n",
+       "6 2016-11-06         45.31196       40.80614         4.230162   \n",
+       "7 2016-11-05         43.68695       40.80897         5.381917   \n",
+       "8 2016-11-06         45.03026       41.83415         8.034579   \n",
+       "9 2016-11-07         42.88452       42.18602         6.367243   \n",
+       "\n",
+       "   adjpoll_mcmullin  \n",
+       "0               NaN  \n",
+       "1               NaN  \n",
+       "2               NaN  \n",
+       "3               NaN  \n",
+       "4               NaN  \n",
+       "5               NaN  \n",
+       "6               NaN  \n",
+       "7               NaN  \n",
+       "8               NaN  \n",
+       "9               NaN  "
+      ]
+     },
+     "execution_count": 10,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df_po.loc[:, ['enddate', 'adjpoll_clinton', 'adjpoll_trump', 'adjpoll_johnson', 'adjpoll_mcmullin']].head(10)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Plotting All Data\n",
+    "### Scatter Plot\n",
+    "Time to plot! We start with a simple scatter plot, with date plotted on the x-axis and voter percentage plotted on the y-axis; API can be found on the [Plotly website](https://plot.ly/python/)."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "metadata": {
+    "collapsed": false,
+    "scrolled": false
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<iframe id=\"igraph\" scrolling=\"no\" style=\"border:none;\" seamless=\"seamless\" src=\"https://plot.ly/~junseopark/14.embed\" height=\"525px\" width=\"100%\"></iframe>"
+      ],
+      "text/plain": [
+       "<plotly.tools.PlotlyDisplay object>"
+      ]
+     },
+     "execution_count": 11,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "#PLOT ALL DATA USING PLOTLY\n",
+    "\n",
+    "fig = {\n",
+    "    'data':[\n",
+    "        #Clinton data\n",
+    "        {\n",
+    "            'name':\"Clinton\", \n",
+    "            'x':df_po.loc[:,'enddate'], \n",
+    "            'y':df_po.loc[:,'adjpoll_clinton'],\n",
+    "            'mode':'markers', 'marker':{'color':'blue', 'opacity':0.1}},\n",
+    "        #Trump data\n",
+    "        {   \n",
+    "            'name':\"Trump\",\n",
+    "            'x':df_po.loc[:,'enddate'], \n",
+    "            'y':df_po.loc[:,'adjpoll_trump'],\n",
+    "            'mode':'markers', 'marker':{'color':'red', 'opacity':0.1}},\n",
+    "        #Johnson data\n",
+    "        {\n",
+    "            'name':\"Johnson\", \n",
+    "            'x':df_po.loc[:,'enddate'], \n",
+    "            'y':df_po.loc[:,'adjpoll_johnson'],\n",
+    "            'mode':'markers', 'marker':{'color':'gold', 'opacity':0.1}},\n",
+    "        #McMullin data\n",
+    "        {\n",
+    "            'name':\"McMullin\", \n",
+    "            'x':df_po.loc[:, 'enddate'], \n",
+    "            'y':df_po.loc[:,'adjpoll_mcmullin'],\n",
+    "            'mode':'markers', 'marker':{'color':'green', 'opacity':0.1}}\n",
+    "    ],\n",
+    "    #set graph layout\n",
+    "    'layout':{\n",
+    "        'title':\"Adjusted Poll Data\",\n",
+    "        #set x-axis default range from one month before the first observation, until one month after the last observation\n",
+    "        'xaxis':{'title':\"Date\", \n",
+    "                 'range':[min(df_po.loc[:, 'enddate']) - pd.DateOffset(months=1), \n",
+    "                                max(df_po.loc[:, 'enddate']) + pd.DateOffset(months=1)]},\n",
+    "        #set y-axis default range from 0 to 100, with tick marks every 10 percentage points\n",
+    "        'yaxis':{'title':\"Percentage\", \n",
+    "                 'range':[0, 100], 'tick0':0, 'dtick':10},\n",
+    "        #set background color\n",
+    "        'plot_bgcolor':'ghostwhite', 'paper_bgcolor':'ghostwhite'}\n",
+    "}\n",
+    "\n",
+    "#plot the data\n",
+    "py.iplot(fig, filename='Election Poll Data')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Graph can be seen [here](https://plot.ly/~junseopark/14/adjusted-poll-data/).\n",
+    "\n",
+    "It looks like Trump generally began the election campaign with lower figures, but the data doesn't indicate anything conclusive towards the end of the campaign. One strange outlier is that several polls indicated that Clinton would attract around 85% of the votes. Since there was so much variation in the data, we decided to take a look at the overall trends including the error bars for the standard deviation of the polls. (From this point on, we have excluded Johnson and McMullin due to low impact on the results.)\n",
+    "\n",
+    "### Continuous Graph with Error Bars\n",
+    "Continuous error graphs allow us to see the mean and standard deviation of all polls, depicted over time. To depict standard deviation, we must calculate standard deviation - but there are two different ways to find the standard deviation (either with Pandas or Numpy). What's the difference?"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Pandas SD: 7.097772011313125\n",
+      "Numpy SD : 7.0969285947560135\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(\"Pandas SD: \" + str(df_po.loc[:,'adjpoll_clinton'].std()))\n",
+    "print(\"Numpy SD : \" + str(np.std(df_po.loc[:, 'adjpoll_clinton'])))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "A quick search shows that Pandas employs [Bessel's Correction](https://en.wikipedia.org/wiki/Bessel's_correction), which divides the sum of squared residuals by n-1 instead of n to account for sampling error. Since our dataset is a population (compilation of every single poll regarding the 2016 elections), there's no need to make this accomodation. So we'll proceed with Numpy's standard deviation formula and plot the continuous error line graph based on the Plotly API:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "metadata": {
+    "collapsed": false,
+    "scrolled": false
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<iframe id=\"igraph\" scrolling=\"no\" style=\"border:none;\" seamless=\"seamless\" src=\"https://plot.ly/~junseopark/22.embed\" height=\"525px\" width=\"100%\"></iframe>"
+      ],
+      "text/plain": [
+       "<plotly.tools.PlotlyDisplay object>"
+      ]
+     },
+     "execution_count": 13,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df_po.sort_values(by='enddate', inplace=True)\n",
+    "clinton_upper = go.Scatter(\n",
+    "    name=\"Clinton Upper Bound\", \n",
+    "    x=df_po.loc[:,'enddate'], \n",
+    "    y=df_po.loc[:,'adjpoll_clinton'] + np.std(df_po.loc[:,'adjpoll_clinton']), \n",
+    "    mode='lines', marker=dict(color='blue'),\n",
+    "    line=dict(width=0),\n",
+    "    fillcolor='rgba(0, 0, 255, 0.2)',\n",
+    "    fill='tonexty')\n",
+    "clinton = go.Scatter(\n",
+    "    name=\"Clinton Mean\", \n",
+    "    x=df_po.loc[:,'enddate'], \n",
+    "    y=np.mean(df_po.loc[:,'adjpoll_clinton']), \n",
+    "    mode='lines', marker=dict(color='blue'),\n",
+    "    line=dict(color='blue'),\n",
+    "    fillcolor='rgba(0,0,255,0.2)',\n",
+    "    fill='tonexty')\n",
+    "clinton_lower = go.Scatter(\n",
+    "    name=\"Clinton Lower Bound\",\n",
+    "    x=df_po.loc[:,'enddate'],\n",
+    "    y=df_po.loc[:,'adjpoll_clinton'] - np.std(df_po.loc[:,'adjpoll_clinton']),\n",
+    "    mode='lines', marker=dict(color='blue'),\n",
+    "    line=dict(width=0),\n",
+    "    fillcolor='rgba(0,0,255,0.2)',\n",
+    "    fill='tonexty')\n",
+    "\n",
+    "trump_upper = go.Scatter(\n",
+    "    name=\"Trump Upper Bound\", \n",
+    "    x=df_po.loc[:,'enddate'], \n",
+    "    y=df_po.loc[:,'adjpoll_trump'] + np.std(df_po.loc[:,'adjpoll_trump']), \n",
+    "    mode='lines', marker=dict(color='red'),\n",
+    "    line=dict(width=0),\n",
+    "    fillcolor='rgba(255, 0, 0, 0.2)',\n",
+    "    fill='tonexty')\n",
+    "trump = go.Scatter(\n",
+    "    name=\"Trump Mean\", \n",
+    "    x=df_po.loc[:,'enddate'], \n",
+    "    y=np.mean(df_po.loc[:,'adjpoll_trump']), \n",
+    "    mode='lines', marker=dict(color='red'),\n",
+    "    line=dict(color='red'),\n",
+    "    fillcolor='rgba(255, 0, 0, 0.2)',\n",
+    "    fill='tonexty')\n",
+    "trump_lower = go.Scatter(\n",
+    "    name=\"Trump Lower Bound\",\n",
+    "    x=df_po.loc[:,'enddate'],\n",
+    "    y=df_po.loc[:,'adjpoll_trump'] - np.std(df_po.loc[:,'adjpoll_trump']),\n",
+    "    mode='lines', marker=dict(color='red'),\n",
+    "    line=dict(width=0),\n",
+    "    fillcolor='rgba(255, 0, 0, 0.2)')\n",
+    "\n",
+    "data = [clinton_lower, clinton, clinton_upper, trump_lower, trump, trump_upper]\n",
+    "layout = go.Layout(\n",
+    "    title=\"Election Poll Means with Standard Deviation\",\n",
+    "    xaxis=dict(range=(min(df_po.loc[:, 'enddate']) - pd.DateOffset(months=1), \n",
+    "                            max(df_po.loc[:, 'enddate']) + pd.DateOffset(months=1))),\n",
+    "    yaxis=dict(title=\"Percentage\", range=[0,100], tick0=0, dtick=10),\n",
+    "    plot_bgcolor='ghostwhite', paper_bgcolor='ghostwhite')\n",
+    "\n",
+    "fig = go.Figure(data=data, layout=layout)\n",
+    "py.iplot(fig, filename='Election Poll Data, Continuous Error Chart')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "[Link to graph](https://plot.ly/~junseopark/22/election-poll-means-with-standard-deviation/)\n",
+    "\n",
+    "Clearly something's not right here, that's not what the graph should look like. Let's take a look at a sample code and dataset provided on the Plotly API website:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<iframe id=\"igraph\" scrolling=\"no\" style=\"border:none;\" seamless=\"seamless\" src=\"https://plot.ly/~junseopark/20.embed\" height=\"525px\" width=\"100%\"></iframe>"
+      ],
+      "text/plain": [
+       "<plotly.tools.PlotlyDisplay object>"
+      ]
+     },
+     "execution_count": 14,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "#EXAMPLE CODE FOR STANDARD DEVIATION GRAPH\n",
+    "import plotly.plotly as py\n",
+    "import plotly.graph_objs as go\n",
+    "\n",
+    "import pandas as pd\n",
+    "\n",
+    "dftest = pd.read_csv('https://raw.githubusercontent.com/plotly/datasets/master/wind_speed_laurel_nebraska.csv')\n",
+    "\n",
+    "upper_bound = go.Scatter(\n",
+    "    name='Upper Bound',\n",
+    "    x=dftest['Time'],\n",
+    "    y=dftest['10 Min Sampled Avg']+dftest['10 Min Std Dev'],\n",
+    "    mode='lines',\n",
+    "    marker=dict(color=\"444\"),\n",
+    "    line=dict(width=0),\n",
+    "    fillcolor='rgba(68, 68, 68, 0.3)',\n",
+    "    fill='tonexty')\n",
+    "\n",
+    "trace = go.Scatter(\n",
+    "    name='Measurement',\n",
+    "    x=dftest['Time'],\n",
+    "    y=dftest['10 Min Sampled Avg'],\n",
+    "    mode='lines',\n",
+    "    line=dict(color='rgb(31, 119, 180)'),\n",
+    "    fillcolor='rgba(68, 68, 68, 0.3)',\n",
+    "    fill='tonexty')\n",
+    "\n",
+    "lower_bound = go.Scatter(\n",
+    "    name='Lower Bound',\n",
+    "    x=dftest['Time'],\n",
+    "    y=dftest['10 Min Sampled Avg']-dftest['10 Min Std Dev'],\n",
+    "    marker=dict(color=\"444\"),\n",
+    "    line=dict(width=0),\n",
+    "    mode='lines')\n",
+    "\n",
+    "# Trace order can be important\n",
+    "# with continuous error bars\n",
+    "data = [lower_bound, trace, upper_bound]\n",
+    "\n",
+    "layout = go.Layout(\n",
+    "    yaxis=dict(title='Wind speed (m/s)'),\n",
+    "    title='Continuous, variable value error bars.<br>Notice the hover text!')\n",
+    "\n",
+    "fig = go.Figure(data=data, layout=layout)\n",
+    "py.iplot(fig, filename='pandas-continuous-error-bars')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "[Link to graph](https://plot.ly/~junseopark/20/continuous-variable-value-error-bars-notice-the-hover-text/)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>10 Min Std Dev</th>\n",
+       "      <th>Time</th>\n",
+       "      <th>10 Min Sampled Avg</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>2.73</td>\n",
+       "      <td>2001-06-11 11:00</td>\n",
+       "      <td>22.3</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>1.98</td>\n",
+       "      <td>2001-06-11 11:10</td>\n",
+       "      <td>23.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>1.87</td>\n",
+       "      <td>2001-06-11 11:20</td>\n",
+       "      <td>23.3</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>2.03</td>\n",
+       "      <td>2001-06-11 11:30</td>\n",
+       "      <td>22.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>3.10</td>\n",
+       "      <td>2001-06-11 11:40</td>\n",
+       "      <td>20.5</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "   10 Min Std Dev              Time  10 Min Sampled Avg\n",
+       "0            2.73  2001-06-11 11:00                22.3\n",
+       "1            1.98  2001-06-11 11:10                23.0\n",
+       "2            1.87  2001-06-11 11:20                23.3\n",
+       "3            2.03  2001-06-11 11:30                22.0\n",
+       "4            3.10  2001-06-11 11:40                20.5"
+      ]
+     },
+     "execution_count": 15,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "dftest.head()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Instead of individual data points, the sample data is split into bins of 10 minutes each, and takes the mean and standard deviation from every 10 minutes. Of course! There's no way you can find a standard deviation from individual data points, so we'll have to adjust the dataset to be in bins of 5 days."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 16,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>date</th>\n",
+       "      <th>mean_c</th>\n",
+       "      <th>mean_t</th>\n",
+       "      <th>sd_c</th>\n",
+       "      <th>sd_t</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>2015-11-16</td>\n",
+       "      <td>43.585107</td>\n",
+       "      <td>44.713320</td>\n",
+       "      <td>1.307381</td>\n",
+       "      <td>1.470704</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>2015-11-26</td>\n",
+       "      <td>47.270880</td>\n",
+       "      <td>40.884840</td>\n",
+       "      <td>0.000000</td>\n",
+       "      <td>0.000000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>2015-12-01</td>\n",
+       "      <td>48.883163</td>\n",
+       "      <td>41.659147</td>\n",
+       "      <td>1.055642</td>\n",
+       "      <td>2.413191</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>2015-12-06</td>\n",
+       "      <td>46.479255</td>\n",
+       "      <td>44.982312</td>\n",
+       "      <td>3.397378</td>\n",
+       "      <td>2.493830</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>2015-12-11</td>\n",
+       "      <td>47.555180</td>\n",
+       "      <td>43.771135</td>\n",
+       "      <td>0.487900</td>\n",
+       "      <td>0.180635</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "        date     mean_c     mean_t      sd_c      sd_t\n",
+       "0 2015-11-16  43.585107  44.713320  1.307381  1.470704\n",
+       "1 2015-11-26  47.270880  40.884840  0.000000  0.000000\n",
+       "2 2015-12-01  48.883163  41.659147  1.055642  2.413191\n",
+       "3 2015-12-06  46.479255  44.982312  3.397378  2.493830\n",
+       "4 2015-12-11  47.555180  43.771135  0.487900  0.180635"
+      ]
+     },
+     "execution_count": 16,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "#creating bins for dates\n",
+    "df_date = df_po[df_po.loc[:,'state']=='U.S.']\n",
+    "df_date = df_date.loc[:,['enddate', 'adjpoll_clinton', 'adjpoll_trump']]\n",
+    "df_date = df_date.reset_index(drop=True)\n",
+    "\n",
+    "for index in range(len(df_date)):     #change all dates to be on the 1st, 11th, or 21st\n",
+    "    d = df_date.loc[index, 'enddate']\n",
+    "    if (d.strftime(\"%d\") <= '05'):\n",
+    "        df_date.loc[index, 'enddate']=d.replace(day=1)\n",
+    "    elif (d.strftime(\"%d\") <= '10'):\n",
+    "        df_date.loc[index, 'enddate']=d.replace(day=6)\n",
+    "    elif (d.strftime(\"%d\") <= '15'):\n",
+    "        df_date.loc[index, 'enddate']=d.replace(day=11)\n",
+    "    elif (d.strftime(\"%d\") <= '20'):\n",
+    "        df_date.loc[index, 'enddate']=d.replace(day=16)\n",
+    "    elif (d.strftime(\"%d\") <= '25'):\n",
+    "        df_date.loc[index, 'enddate']=d.replace(day=21)\n",
+    "    elif (d.strftime(\"%d\") <= '31'):\n",
+    "        df_date.loc[index, 'enddate']=d.replace(day=26)\n",
+    "\n",
+    "#adding rows to new dataframe df_bins\n",
+    "df_bins = pd.DataFrame(columns=('date', 'mean_c', 'mean_t', 'sd_c', 'sd_t'))\n",
+    "while (len(df_date) != 0):\n",
+    "    row0 = df_date.iloc[0,:]\n",
+    "    d = row0.loc['enddate']\n",
+    "    mean_c = np.mean(df_date.loc[:,'adjpoll_clinton'][df_date.loc[:,'enddate']==d])\n",
+    "    mean_t = np.mean(df_date.loc[:,'adjpoll_trump'][df_date.loc[:,'enddate']==d])\n",
+    "    sd_c = np.std(df_date.loc[:,'adjpoll_clinton'][df_date.loc[:,'enddate']==d])\n",
+    "    sd_t = np.std(df_date.loc[:,'adjpoll_trump'][df_date.loc[:,'enddate']==d])\n",
+    "    df_bins.loc[df_bins.shape[0]] = [d, mean_c, mean_t, sd_c, sd_t]\n",
+    "    df_date = df_date[df_date.loc[:,'enddate']!=d]\n",
+    "    df_po = df_po.reset_index(drop=True)\n",
+    "    \n",
+    "#reordering rows by date\n",
+    "df_bins.sort_values(by='date', inplace=True)\n",
+    "df_bins.head()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Now our data resembles the sample Plotly dataset. Now we re-plot:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "metadata": {
+    "collapsed": false,
+    "scrolled": false
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<iframe id=\"igraph\" scrolling=\"no\" style=\"border:none;\" seamless=\"seamless\" src=\"https://plot.ly/~junseopark/26.embed\" height=\"525px\" width=\"100%\"></iframe>"
+      ],
+      "text/plain": [
+       "<plotly.tools.PlotlyDisplay object>"
+      ]
+     },
+     "execution_count": 17,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "#replotting continuous error charts\n",
+    "clinton_upper = go.Scatter(\n",
+    "    name=\"Clinton Upper Bound\", \n",
+    "    x=df_bins.loc[:,'date'], \n",
+    "    y=df_bins.loc[:,'mean_c'] + df_bins.loc[:,'sd_c'], \n",
+    "    mode='lines', marker=dict(color='blue'),\n",
+    "    line=dict(width=0),\n",
+    "    fillcolor='rgba(0, 0, 255, 0.2)',\n",
+    "    fill='tonexty')\n",
+    "clinton = go.Scatter(\n",
+    "    name=\"Clinton Mean\", \n",
+    "    x=df_bins.loc[:,'date'], \n",
+    "    y=df_bins.loc[:,'mean_c'], \n",
+    "    mode='lines', marker=dict(color='blue'),\n",
+    "    line=dict(color='blue'),\n",
+    "    fillcolor='rgba(0,0,255,0.2)',\n",
+    "    fill='tonexty')\n",
+    "clinton_lower = go.Scatter(\n",
+    "    name=\"Clinton Lower Bound\",\n",
+    "    x=df_bins.loc[:,'date'],\n",
+    "    y=df_bins.loc[:,'mean_c'] - df_bins.loc[:,'sd_c'],\n",
+    "    mode='lines', marker=dict(color='blue'),\n",
+    "    line=dict(width=0),\n",
+    "    fillcolor='rgba(0,0,255,0.2)')\n",
+    "\n",
+    "trump_upper = go.Scatter(\n",
+    "    name=\"Trump Upper Bound\", \n",
+    "    x=df_bins.loc[:,'date'], \n",
+    "    y=df_bins.loc[:,'mean_t'] + df_bins.loc[:,'sd_t'], \n",
+    "    mode='lines', marker=dict(color='red'),\n",
+    "    line=dict(width=0),\n",
+    "    fillcolor='rgba(255, 0, 0, 0.2)',\n",
+    "    fill='tonexty')\n",
+    "trump = go.Scatter(\n",
+    "    name=\"Trump Mean\", \n",
+    "    x=df_bins.loc[:,'date'], \n",
+    "    y=df_bins.loc[:,'mean_t'], \n",
+    "    mode='lines', marker=dict(color='red'),\n",
+    "    line=dict(color='red'),\n",
+    "    fillcolor='rgba(255, 0, 0, 0.2)',\n",
+    "    fill='tonexty')\n",
+    "trump_lower = go.Scatter(\n",
+    "    name=\"Trump Lower Bound\",\n",
+    "    x=df_bins.loc[:,'date'],\n",
+    "    y=df_bins.loc[:,'mean_t'] - df_bins.loc[:,'sd_t'],\n",
+    "    mode='lines', marker=dict(color='red'),\n",
+    "    line=dict(width=0),\n",
+    "    fillcolor='rgba(255, 0, 0, 0.2)')\n",
+    "\n",
+    "data = [clinton_lower, clinton, clinton_upper, trump_lower, trump, trump_upper]\n",
+    "layout = go.Layout(\n",
+    "    title=\"Election Poll Means with Standard Deviation (Adjusted)\",\n",
+    "    xaxis=dict(range=(min(df_po.loc[:, 'enddate']) - pd.DateOffset(months=1), \n",
+    "                            max(df_po.loc[:, 'enddate']) + pd.DateOffset(months=1))),\n",
+    "    yaxis=dict(title=\"Percentage\", range=[0,100], tick0=0, dtick=10),\n",
+    "    plot_bgcolor='ghostwhite', paper_bgcolor='ghostwhite')\n",
+    "\n",
+    "fig = go.Figure(data=data, layout=layout)\n",
+    "py.iplot(fig, filename='Election Poll Data, Continuous Error Chart (Adjusted)')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "[Link to graph](https://plot.ly/~junseopark/26/election-poll-means-with-standard-deviation-adjusted/)\n",
+    "\n",
+    "As was reported in the media (and the election results), Clinton held a lead in the popular vote until the end. The error bars begin with a wide spread, but towards the end of the race, the errors decrease in size, indicating a more confident sampling result. For context, the FBI issued its first statement regarding Clinton's private email server in the beginning of July (when we see Trump's poll ratings rise significantly). Other events that occurred but did not produce significant impact:\n",
+    "\n",
+    "- May 26, 2016: Trump secures Republican nomination\n",
+    "- June 6, 2016: Clinton secures Democratic nomination\n",
+    "- July 18-21, 2016: Republican National Convention\n",
+    "- July 25-28, 2016: Democratic National Convention\n",
+    "- September 26, 2016: First Presidential debate\n",
+    "- October 4, 2016: VP debate\n",
+    "- October 7, 2016: Trump's incriminating video is released\n",
+    "- October 9, 2016: Second Presidential debate\n",
+    "- October 19, 2016: Third Presidential debate\n",
+    "- October 28, 2016: FBI announces a continued investigation into Clinton's private email server"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "collapsed": true
+   },
+   "source": [
+    "## Bubble Charts\n",
+    "\n",
+    "Next, we look at the relation between sample size and poll results."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<iframe id=\"igraph\" scrolling=\"no\" style=\"border:none;\" seamless=\"seamless\" src=\"https://plot.ly/~junseopark/43.embed\" height=\"525px\" width=\"100%\"></iframe>"
+      ],
+      "text/plain": [
+       "<plotly.tools.PlotlyDisplay object>"
+      ]
+     },
+     "execution_count": 18,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "sizemode = 'area'\n",
+    "\n",
+    "sizeref = df_po.loc[:,'samplesize'].max()/1e2**2\n",
+    "\n",
+    "hover_c = []\n",
+    "for index, row in df_po.iterrows():\n",
+    "    hover_c.append(('{state}<br>'+\n",
+    "                      'Sample Size: {samplesize}<br>'+\n",
+    "                        'Percentage: {adjpoll_clinton}'\n",
+    "                      ).format(state=row['state'],\n",
+    "                               samplesize=row['samplesize'],\n",
+    "                                adjpoll_clinton=row['adjpoll_clinton']))\n",
+    "df_po['text'] = hover_c\n",
+    "\n",
+    "trace0 = go.Scatter(\n",
+    "        x=df_po.loc[:,'enddate'],\n",
+    "        y=df_po.loc[:,'adjpoll_clinton'], \n",
+    "        name = 'Clinton',\n",
+    "        mode='markers',\n",
+    "        text = df_po.loc[:, 'text'],\n",
+    "        marker= go.Marker(\n",
+    "            color = 'blue',\n",
+    "            size=df_po.loc[:,'samplesize'], \n",
+    "            sizeref=sizeref, \n",
+    "            sizemode=sizemode, \n",
+    "            opacity=0.1, \n",
+    "            line=go.Line(width=1)\n",
+    "        )     \n",
+    "    )\n",
+    "\n",
+    "hover_t = []\n",
+    "for index, row in df_po.iterrows():\n",
+    "    hover_t.append(('{state}<br>'+\n",
+    "                      'Sample Size: {samplesize}<br>'+\n",
+    "                        'Percentage: {adjpoll_trump}'\n",
+    "                      ).format(state=row['state'],\n",
+    "                               samplesize=row['samplesize'],\n",
+    "                                adjpoll_trump=row['adjpoll_trump']))\n",
+    "df_po['text'] = hover_t\n",
+    "\n",
+    "trace1 = go.Scatter(\n",
+    "        x=df_po.loc[:,'enddate'],\n",
+    "        y=df_po.loc[:,'adjpoll_trump'], \n",
+    "        name = 'Trump',\n",
+    "        mode='markers',\n",
+    "        text = df_po['text'],\n",
+    "        marker= go.Marker(\n",
+    "            color = 'red',\n",
+    "            size=df_po.loc[:,'samplesize'], \n",
+    "            sizeref=sizeref, \n",
+    "            sizemode=sizemode, \n",
+    "            opacity=0.1, \n",
+    "            line=go.Line(width=2)\n",
+    "        )     \n",
+    "    )\n",
+    "\n",
+    "data = go.Data([trace0, trace1])\n",
+    "\n",
+    "title = \"Bubble Chart: Sample Size - Poll Results\"\n",
+    "x_title = \"Date\"\n",
+    "y_title = \"Percentage\"\n",
+    "\n",
+    "layout1 = go.Layout(\n",
+    "    title=title,\n",
+    "    xaxis=go.XAxis( title=x_title),\n",
+    "    yaxis=go.YAxis(title=y_title),\n",
+    "    hovermode = 'closest'\n",
+    ")\n",
+    "\n",
+    "fig = go.Figure(data=data, layout=layout1)\n",
+    "py.iplot(fig)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "[Link to graph](https://plot.ly/~emmanduncan/260)\n",
+    "\n",
+    "By isolating each candidate, we can see that as sample size increases, the poll results tend to converge. Very high and low percentages correlate to smaller polls, conducted at the state level. This further shows that the outcome of the election was difficult to predict, even with a larger poll sampling. In addition, we see that sample size tends to increase as we get closer to the date of the election. This makes sense, since more political awareness increases as the election date approaches.\n",
+    "\n",
+    "## Plotting by Pollster Grade"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 19,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array(['B+', 'C+', 'A-', 'A', nan, 'B-', 'B', 'A+', 'C', 'C-', 'D'], dtype=object)"
+      ]
+     },
+     "execution_count": 19,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df_po.loc[:,'grade'].unique() #display unique values of the 'grade' factor"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "We see that there are 10 different `grade` types: A+, A, A-, B+, B, B-, C+, C, C-, and D. In addition, there some polls do not have a ranking. That's a lot to work with, so we'll whittle it down to six: A+, A, B, C, D, and N/A. With the exception of A+, we drop the +/- from all the grades, then we'll plot scatterplots for each grade."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 20,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "C:\\Users\\Jun Seo\\Anaconda3\\envs\\venv\\lib\\site-packages\\ipykernel\\__main__.py:10: SettingWithCopyWarning:\n",
+      "\n",
+      "\n",
+      "A value is trying to be set on a copy of a slice from a DataFrame\n",
+      "\n",
+      "See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/indexing.html#indexing-view-versus-copy\n",
+      "\n"
+     ]
+    },
+    {
+     "data": {
+      "text/plain": [
+       "array(['B', 'C', 'A', 'NA', 'A+', 'D'], dtype=object)"
+      ]
+     },
+     "execution_count": 20,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df_grade = df_po\n",
+    "for index in range(len(df_grade)):\n",
+    "    grade = df_grade.loc[index, 'grade']\n",
+    "    if (grade=='A-'):                     #change A- grades to A\n",
+    "        df_grade.loc[index, 'grade']='A'\n",
+    "    elif (grade=='B+' or  grade=='B-'):   #change B+ and B- grades to B\n",
+    "        df_grade.loc[index, 'grade']='B'\n",
+    "    elif (grade=='C+' or grade=='C-'):\n",
+    "        df_grade.loc[index, 'grade']='C'  #change C+ and C- grades to C\n",
+    "df_grade.loc[:, 'grade'][df_grade.loc[:, 'grade'].isnull()] = 'NA'     #change empty grades ('nan') to string 'NA'\n",
+    "\n",
+    "df_grade.grade.unique() #display unique values of 'grade'"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Scatter Plot"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 21,
+   "metadata": {
+    "collapsed": false,
+    "scrolled": false
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "This is the format of your plot grid:\n",
+      "[ (1,1) x1,y1 ]  [ (1,2) x2,y2 ]\n",
+      "[ (2,1) x3,y3 ]  [ (2,2) x4,y4 ]\n",
+      "[ (3,1) x5,y5 ]  [ (3,2) x6,y6 ]\n",
+      "\n"
+     ]
+    },
+    {
+     "data": {
+      "text/html": [
+       "<iframe id=\"igraph\" scrolling=\"no\" style=\"border:none;\" seamless=\"seamless\" src=\"https://plot.ly/~junseopark/10.embed\" height=\"525px\" width=\"100%\"></iframe>"
+      ],
+      "text/plain": [
+       "<plotly.tools.PlotlyDisplay object>"
+      ]
+     },
+     "execution_count": 21,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "#PLOTTING CLINTON, TRUMP BY GRADE\n",
+    "\n",
+    "#Creating traces for each candidate/grade combination\n",
+    "trace_CAp=go.Scatter()\n",
+    "trace_CA=go.Scatter()\n",
+    "trace_CB=go.Scatter()\n",
+    "trace_CC=go.Scatter()\n",
+    "trace_CD=go.Scatter()\n",
+    "trace_CNA=go.Scatter()\n",
+    "trace_TAp=go.Scatter()\n",
+    "trace_TA=go.Scatter()\n",
+    "trace_TB=go.Scatter()\n",
+    "trace_TC=go.Scatter()\n",
+    "trace_TD=go.Scatter()\n",
+    "trace_TNA=go.Scatter()\n",
+    "tracesC = [trace_CAp, trace_CA, trace_CB, trace_CC, trace_CD, trace_CNA]\n",
+    "tracesT = [trace_TAp, trace_TA, trace_TB, trace_TC, trace_TD, trace_TNA]\n",
+    "candidates = {'clinton':tracesC, 'trump':tracesT}\n",
+    "grades = ['A+', 'A', 'B', 'C', 'D', 'NA']\n",
+    "\n",
+    "#Assigning attributes for each trace\n",
+    "def gradeSubsetX(grade):\n",
+    "    return df_grade.loc[:, 'enddate'][df_grade.loc[:, 'grade']==grade]\n",
+    "def gradeSubsetY(grade, name):\n",
+    "    return df_grade.loc[:, 'adjpoll_'+name][df_grade.loc[:, 'grade']==grade]\n",
+    "\n",
+    "for name, traceList in candidates.items():\n",
+    "    i=0\n",
+    "    for trace in traceList:\n",
+    "        trace.name = name.title() + ' ' + grades[i]\n",
+    "        trace.x = gradeSubsetX(grades[i])\n",
+    "        trace.y = gradeSubsetY(grades[i], name)\n",
+    "        trace.mode = 'markers'\n",
+    "        trace.marker = dict(color='blue' if name=='clinton' else 'red', \n",
+    "                            opacity=0.1)\n",
+    "        i+=1\n",
+    "\n",
+    "#Creating subplots and appending traces to each subplot\n",
+    "fig = tools.make_subplots(rows=3, cols=2, subplot_titles=('A+', 'A', 'B',\n",
+    "                                                          'C', 'D', 'NA'))\n",
+    "\n",
+    "i=0\n",
+    "for j in range(1,4):\n",
+    "    for k in range(1, 3):\n",
+    "        fig.append_trace(tracesC[i], j, k)\n",
+    "        fig.append_trace(tracesT[i], j, k)\n",
+    "        i += 1\n",
+    "\n",
+    "#Organizing layout for each subplot\n",
+    "xaxis = dict(range=(min(df_grade.loc[:, 'enddate']) - pd.DateOffset(months=1), \n",
+    "                       max(df_grade.loc[:, 'enddate']) + pd.DateOffset(months=1)))\n",
+    "yaxis = dict(range=[0,100], tick0=0, dtick=25)\n",
+    "layout = go.Layout(\n",
+    "    title=\"Clinton and Trump, By Pollster Grade\",\n",
+    "    xaxis1=xaxis,\n",
+    "    xaxis2=xaxis,\n",
+    "    xaxis3=xaxis,\n",
+    "    xaxis4=xaxis,\n",
+    "    xaxis5=xaxis,\n",
+    "    xaxis6=xaxis,\n",
+    "    yaxis1=yaxis, \n",
+    "    yaxis2=yaxis, \n",
+    "    yaxis3=yaxis, \n",
+    "    yaxis4=yaxis,\n",
+    "    yaxis5=yaxis,\n",
+    "    yaxis6=yaxis,\n",
+    "    plot_bgcolor='ghostwhite', paper_bgcolor='ghostwhite')\n",
+    "fig['layout'].update(layout)\n",
+    "\n",
+    "py.iplot(fig, filename='Election Poll Data, By Grade')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "[Link to graph](https://plot.ly/~junseopark/10/clinton-and-trump-by-pollster-grade/)\n",
+    "\n",
+    "We see that there are not enough D and NA polls to draw conclusive evidence for those two groups. However, it is fascinating to see that generally, A and A+ polls expected Trump to fare worse in the beginning, whereas B and C polls do not show any particular bias towards Clinton (aside from the aforementioned 85% Clinton polls).\n",
+    "\n",
+    "### Boxplots\n",
+    "For further comparison by grade, we also plot each in boxplot form. This will allow us to see not only the change of data over time, but also the spread of the data."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 22,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<iframe id=\"igraph\" scrolling=\"no\" style=\"border:none;\" seamless=\"seamless\" src=\"https://plot.ly/~junseopark/16.embed\" height=\"525px\" width=\"100%\"></iframe>"
+      ],
+      "text/plain": [
+       "<plotly.tools.PlotlyDisplay object>"
+      ]
+     },
+     "execution_count": 22,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "#BOXPLOTS BY GRADE\n",
+    "\n",
+    "trace_Clinton = go.Box(\n",
+    "    name=\"Clinton\",\n",
+    "    x=df_grade.loc[:,'grade'], \n",
+    "    y=df_grade.loc[:, 'adjpoll_clinton'],\n",
+    "    marker=dict(color='blue'))\n",
+    "trace_Trump = go.Box(\n",
+    "    name=\"Trump\",\n",
+    "    x=df_grade.loc[:, 'grade'], \n",
+    "    y=df_grade.loc[:, 'adjpoll_trump'], \n",
+    "    marker=dict(color='red'))\n",
+    "\n",
+    "data = [trace_Clinton, trace_Trump]\n",
+    "layout = go.Layout(\n",
+    "    title=\"Boxplots of Election Polls, By Pollster Grade\",\n",
+    "    yaxis=dict(title=\"Percentage\", range=[0, 100], tick0=0, dtick=10, zeroline=False), \n",
+    "    boxmode='group', #place boxes in groups by grade\n",
+    "    plot_bgcolor='ghostwhite', paper_bgcolor='ghostwhite')\n",
+    "fig = go.Figure(data=data, layout=layout)\n",
+    "\n",
+    "py.iplot(fig, filename=\"Election Poll Boxplots, by Grade\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "[Link to graph](https://plot.ly/~junseopark/16/boxplots-of-election-polls-by-pollster-grade/)\n",
+    "\n",
+    "The grades aren't depicted in alphabetical order; that's because the first unique grade entry was a B+/B/B-, second was C+/C/C-, third was A/A-, fourth was NA, etc. We can reorder by creating a dictionary of grades assigned to numbers, then creating a new variable called `graderank` to sort these values."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 23,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [],
+   "source": [
+    "grades = {'A+':1, 'A':2, 'B':3, 'C':4, 'D':5, 'NA':6}\n",
+    "df_grade.insert(loc=len(df_grade.iloc[0]), column='graderank', value=0)\n",
+    "df_grade.loc[:,'graderank'] = df_grade.loc[:, 'grade'].map(grades)\n",
+    "df_grade.sort_values(by='graderank', inplace=True)\n",
+    "df_grade = df_grade.drop(labels='graderank', axis=1)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Then we re-plot:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 24,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<iframe id=\"igraph\" scrolling=\"no\" style=\"border:none;\" seamless=\"seamless\" src=\"https://plot.ly/~junseopark/28.embed\" height=\"525px\" width=\"100%\"></iframe>"
+      ],
+      "text/plain": [
+       "<plotly.tools.PlotlyDisplay object>"
+      ]
+     },
+     "execution_count": 24,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "trace_Clinton = go.Box(\n",
+    "    name=\"Clinton\",\n",
+    "    x=df_grade.loc[:,'grade'], \n",
+    "    y=df_grade.loc[:, 'adjpoll_clinton'],\n",
+    "    marker=dict(color='blue'))\n",
+    "trace_Trump = go.Box(\n",
+    "    name=\"Trump\",\n",
+    "    x=df_grade.loc[:, 'grade'], \n",
+    "    y=df_grade.loc[:, 'adjpoll_trump'], \n",
+    "    marker=dict(color='red'))\n",
+    "\n",
+    "data = [trace_Clinton, trace_Trump]\n",
+    "layout = go.Layout(\n",
+    "    title=\"Boxplots of Election Polls, By Ordered Pollster Grade\",\n",
+    "    yaxis=dict(title=\"Percentage\", range=[0, 100], tick0=0, dtick=10, zeroline=False), \n",
+    "    boxmode='group', #place boxes in groups by grade\n",
+    "    plot_bgcolor='ghostwhite', paper_bgcolor='ghostwhite')\n",
+    "fig = go.Figure(data=data, layout=layout)\n",
+    "\n",
+    "py.iplot(fig, filename=\"Election Poll Boxplots, by Ordered Pollster Grade\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "[Link to graph](https://plot.ly/~junseopark/28/boxplots-of-election-polls-by-ordered-pollster-grade/)\n",
+    "\n",
+    "*Note: We must be careful with boxplots, as we are grouping a dataset over time into one visualization.*\n",
+    "\n",
+    "As expected, the lower grades (B and C) demonstrate a larger spread than the A+ and A polls. This is expected — polls with lower reputations likely have low grades due to less resources and polling techniques, and thus are more likely to show greater variability in results. While D may initially seem strangely accurate, it's actually because it doesn't have enough data points to provide accurate insight. And by nature of NA, we don't know the quality of those pollsters. Beyond that, generally we see that as the grade decreases, the distribution widens and there are more outliers. Even so, all the grade letter distributions rank Clinton above Trump and suggest that Clinton should have won. \n",
+    "\n",
+    "### Bubble Charts\n",
+    "Next, we look at sample size as it relates to the grade of each pollster."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 25,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<iframe id=\"igraph\" scrolling=\"no\" style=\"border:none;\" seamless=\"seamless\" src=\"https://plot.ly/~junseopark/45.embed\" height=\"525px\" width=\"100%\"></iframe>"
+      ],
+      "text/plain": [
+       "<plotly.tools.PlotlyDisplay object>"
+      ]
+     },
+     "execution_count": 25,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "sizemode = 'area'\n",
+    "\n",
+    "sizeref = df_grade.loc[:,'samplesize'].max()/1e2**2\n",
+    "\n",
+    "samplesize = df_grade.loc[:,'samplesize']\n",
+    "\n",
+    "hover_text = []\n",
+    "for index, row in df_grade.iterrows():\n",
+    "    hover_text.append(('{state}<br>'+\n",
+    "                      'Sample Size: {samplesize}<br>'\n",
+    "                      ).format(state=row['state'],\n",
+    "                               samplesize=row['samplesize']))\n",
+    "df_grade['text'] = hover_text\n",
+    "\n",
+    "trace0 = go.Scatter(\n",
+    "        x=df_grade.loc[:,'enddate'][df_grade.loc[:,'state'] == 'U.S.'],\n",
+    "        y=df_grade.loc[:,'grade'][df_grade.loc[:,'state'] == 'U.S.'], \n",
+    "        name = 'U.S.',\n",
+    "        mode='markers',\n",
+    "        text = df_grade.loc[:,'text'][df_grade.loc[:,'state'] == 'U.S.'],\n",
+    "        marker= go.Marker(\n",
+    "            color = 'cornflowerblue',\n",
+    "            size=df_grade.loc[:,'samplesize'][df_grade.loc[:,'state'] == 'U.S.'], \n",
+    "            sizeref=sizeref, \n",
+    "            sizemode=sizemode, \n",
+    "            opacity=0.2, \n",
+    "            line=go.Line(width=1)\n",
+    "        )     \n",
+    "    )\n",
+    "\n",
+    "trace1 = go.Scatter(\n",
+    "        x=df_grade.loc[:,'enddate'][df_grade.loc[:,'state'] != 'U.S.'],\n",
+    "        y=df_grade.loc[:,'grade'][df_grade.loc[:,'state'] != 'U.S.'], \n",
+    "        mode='markers',\n",
+    "        name = 'State',\n",
+    "        text = df_grade.loc[:,'text'][df_grade.loc[:,'state'] != 'U.S.'],\n",
+    "        marker= go.Marker(\n",
+    "            color = 'limegreen',\n",
+    "            size=df_grade.loc[:,'samplesize'][df_grade.loc[:,'state'] != 'U.S.'], \n",
+    "            sizeref=sizeref, \n",
+    "            sizemode=sizemode, \n",
+    "            opacity=0.2, \n",
+    "            line=go.Line(width=1)\n",
+    "        )     \n",
+    "    )\n",
+    "\n",
+    "title = \"Bubble Chart: Sample Size - Poll Grade\"\n",
+    "x_title = \"Date\"\n",
+    "y_title = \"Grade\"\n",
+    "\n",
+    "layout = go.Layout(\n",
+    "    title=title,\n",
+    "    xaxis=go.XAxis( title=x_title),\n",
+    "    yaxis=go.YAxis(title=y_title),\n",
+    "    hovermode = 'closest'\n",
+    ")\n",
+    "\n",
+    "\n",
+    "data = go.Data([trace0,trace1])\n",
+    "\n",
+    "fig = go.Figure(data=data, layout=layout)\n",
+    "py.iplot(fig)\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "[Link to graph](https://plot.ly/~emmanduncan/262)\n",
+    "\n",
+    "As seen above, a larger sample size does not necesarially indicate a more accurate poll. Looking just at the U.S. polling data, polls graded 'B' or 'C' tend to have the largest sample size, with this size growing as the date approaches the election date. This indicates that sample size may not have a direct influence on the pollster grade. The polls graded 'A' and 'A+' have a smaller and fairly consistent sample size no larger than 2,500. From FiveThirtyEight, in order to calculate these poll grades, they consider \"type of election surveyed, [and] a poll’s sample size\" [source](https://fivethirtyeight.com/features/how-fivethirtyeight-calculates-pollster-ratings/). Although sample size plays a role in predicting accuracy, perhaps a more consistent sampling is better than a larger size of sample. For state polling data, sample size is relatively smaller and dependent on the population of each state.\n",
+    "\n",
+    "## Plotting by State\n",
+    "What role did each state play in the election? We begin by looking at all poll results divided by state:\n",
+    "### Categorical Scatter Plot"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 26,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<iframe id=\"igraph\" scrolling=\"no\" style=\"border:none;\" seamless=\"seamless\" src=\"https://plot.ly/~junseopark/47.embed\" height=\"525px\" width=\"100%\"></iframe>"
+      ],
+      "text/plain": [
+       "<plotly.tools.PlotlyDisplay object>"
+      ]
+     },
+     "execution_count": 26,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df_states = df_po.sort_values(by='state')\n",
+    "\n",
+    "trace0 = go.Scatter(\n",
+    "        x = df_states.loc[:,'state'],\n",
+    "        y = df_states.loc[:,'adjpoll_clinton'],\n",
+    "        mode = 'markers',\n",
+    "        name = 'Clinton',\n",
+    "        marker = dict(color = 'blue', opacity = 0.1))\n",
+    "\n",
+    "trace1 = go.Scatter(\n",
+    "        x = df_states.loc[:,'state'],\n",
+    "        y = df_states.loc[:,'adjpoll_trump'],\n",
+    "        mode = 'markers',\n",
+    "        name = 'Trump',\n",
+    "        marker = dict(color = 'red', opacity = 0.1))\n",
+    "\n",
+    "title = \"Adjusted Poll Data by State\"\n",
+    "x_title = \"State\"\n",
+    "y_title = \"Percentage\"\n",
+    "\n",
+    "layout = go.Layout(\n",
+    "    title=title,\n",
+    "    xaxis=go.XAxis( title=x_title),\n",
+    "    yaxis=go.YAxis(title=y_title),\n",
+    "    hovermode = 'closest'\n",
+    ")\n",
+    "\n",
+    "\n",
+    "data = go.Data([trace0,trace1])\n",
+    "\n",
+    "fig = go.Figure(data=data, layout=layout)\n",
+    "py.iplot(fig)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "[Link to graph](https://plot.ly/~emmanduncan/278/adjusted-poll-data-by-state/)\n",
+    "\n",
+    "In this plot, it is easy to identify which states are clearly red or clearly blue (if the data points grouped by color and spread out), as well as the swing states (in which the data points are all grouped towards the center). It is interesting to note that even in the most polarized states, such as D.C. there are a few polls where Trump and Clinton's percentages are almost equal.\n",
+    "\n",
+    "### Chloropleth Maps\n",
+    "To contrast each state's polling results with the actual results, we can use a chloropleth map in order to see if there was any discernable difference in polling by state and the actual results. But the original dataset contained observation of individual polls, and there were many polls for each state. We'll have to sort through those by aggregating the number of votes for each candidate in each state."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 27,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>code</th>\n",
+       "      <th>state</th>\n",
+       "      <th>samplesize</th>\n",
+       "      <th>clinton</th>\n",
+       "      <th>trump</th>\n",
+       "      <th>clinton_pct</th>\n",
+       "      <th>trump_pct</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>AL</td>\n",
+       "      <td>Alabama</td>\n",
+       "      <td>27153.0</td>\n",
+       "      <td>8.992856e+05</td>\n",
+       "      <td>1.570689e+06</td>\n",
+       "      <td>33.119197</td>\n",
+       "      <td>57.845873</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>AK</td>\n",
+       "      <td>Alaska</td>\n",
+       "      <td>12240.0</td>\n",
+       "      <td>4.309978e+05</td>\n",
+       "      <td>5.495426e+05</td>\n",
+       "      <td>35.212235</td>\n",
+       "      <td>44.897274</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>AZ</td>\n",
+       "      <td>Arizona</td>\n",
+       "      <td>69177.0</td>\n",
+       "      <td>2.919496e+06</td>\n",
+       "      <td>3.068696e+06</td>\n",
+       "      <td>42.203272</td>\n",
+       "      <td>44.360056</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>AR</td>\n",
+       "      <td>Arkansas</td>\n",
+       "      <td>17965.0</td>\n",
+       "      <td>6.353103e+05</td>\n",
+       "      <td>9.472248e+05</td>\n",
+       "      <td>35.363781</td>\n",
+       "      <td>52.726123</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>CA</td>\n",
+       "      <td>California</td>\n",
+       "      <td>103154.0</td>\n",
+       "      <td>5.588077e+06</td>\n",
+       "      <td>3.374816e+06</td>\n",
+       "      <td>54.172181</td>\n",
+       "      <td>32.716288</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "  code       state  samplesize       clinton         trump  clinton_pct  \\\n",
+       "0   AL     Alabama     27153.0  8.992856e+05  1.570689e+06    33.119197   \n",
+       "1   AK      Alaska     12240.0  4.309978e+05  5.495426e+05    35.212235   \n",
+       "2   AZ     Arizona     69177.0  2.919496e+06  3.068696e+06    42.203272   \n",
+       "3   AR    Arkansas     17965.0  6.353103e+05  9.472248e+05    35.363781   \n",
+       "4   CA  California    103154.0  5.588077e+06  3.374816e+06    54.172181   \n",
+       "\n",
+       "   trump_pct  \n",
+       "0  57.845873  \n",
+       "1  44.897274  \n",
+       "2  44.360056  \n",
+       "3  52.726123  \n",
+       "4  32.716288  "
+      ]
+     },
+     "execution_count": 27,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "state_dict = {'Alabama':'AL', 'Alaska':'AK', 'Arizona':'AZ', 'Arkansas':'AR', 'California':'CA', 'Colorado':'CO',\n",
+    "              'Connecticut':'CT', 'Delaware':'DE', 'District of Columbia':'DC', 'Florida':'FL', 'Georgia':'GA',\n",
+    "              'Hawaii':'HI', 'Idaho':'ID', 'Illinois':'IL', 'Indiana':'IN', 'Iowa':'IA', 'Kansas':'KS', 'Kentucky':'KY',\n",
+    "              'Louisiana':'LA', 'Maine':'ME', 'Maryland':'MD', 'Massachusetts':'MA', 'Michigan':'MI', 'Minnesota':'MN',\n",
+    "              'Mississippi':'MS', 'Missouri':'MO', 'Montana':'MT', 'Nebraska':'NE', 'Nevada':'NV', 'New Hampshire':'NH',\n",
+    "              'New Jersey':'NJ', 'New Mexico':'NM', 'New York':'NY', 'North Carolina':'NC', 'North Dakota':'ND',\n",
+    "              'Ohio':'OH', 'Oklahoma':'OK', 'Oregon':'OR', 'Pennsylvania':'PA', 'Rhode Island':'RI', 'South Carolina':'SC',\n",
+    "              'South Dakota':'SD', 'Tennessee':'TN', 'Texas':'TX', 'Utah':'UT', 'Vermont':'VT', 'Virginia':'VA',\n",
+    "              'Washington':'WA', 'West Virginia':'WV', 'Wisconsin':'WI', 'Wyoming':'WY'}\n",
+    "\n",
+    "#to_remove = ['Maine CD-1', 'Maine CD-2', 'Nebraska CD-1', 'Nebraska CD-2', 'Nebraska CD-3', 'U.S.']\n",
+    "#    if state in ['Maine CD-1', 'Maine CD-2']:\n",
+    "#        state = 'Maine'\n",
+    "#    elif state in ['Nebraska CD-1', 'Nebraska CD-2', 'Nebraska CD-3']:\n",
+    "#        state = 'Nebraska'\n",
+    "\n",
+    "#Iterate through dictionary of states; for each state, subset all polls conducted in the state and sum the votes for Clinton\n",
+    "#and for Trump. Then add the results to a new dictionary data_list.\n",
+    "data_list = []\n",
+    "for state, code in state_dict.items():\n",
+    "    dict1 = {}\n",
+    "    samplesize = df_po[df_po.loc[:,'state']==state].loc[:,'samplesize']\n",
+    "    clinton = df_po[df_po.loc[:,'state']==state].loc[:,'adjpoll_clinton']\n",
+    "    trump = df_po[df_po.loc[:,'state']==state].loc[:,'adjpoll_trump']\n",
+    "    dict1['state'] = state\n",
+    "    dict1['code'] = code\n",
+    "    dict1['samplesize'] = samplesize.sum()\n",
+    "    dict1['clinton'] = (clinton * samplesize).sum() #Aggregating Clinton poll votes\n",
+    "    dict1['trump'] = (trump * samplesize).sum()     #Aggregating Trump poll votes\n",
+    "    data_list.append(dict1)\n",
+    "    \n",
+    "#Create a new Pandas DataFrame from data_list, and calculate percentages from the aggregate votes.\n",
+    "df_map = pd.DataFrame(data_list, columns=['code', 'state', 'samplesize', 'clinton', 'trump'])\n",
+    "df_map.loc[:,'clinton_pct'] = df_map.loc[:,'clinton']/df_map.loc[:,'samplesize']\n",
+    "df_map.loc[:,'trump_pct'] = df_map.loc[:,'trump']/df_map.loc[:,'samplesize']\n",
+    "df_map.head()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "`df_map` now contains the aggregate percentages for each state. To look at the difference between the polls and the actual results by state, we read in [another dataset](../master/results.csv) ([source](https://simonrogers.net/2016/11/16/us-election-2016-how-to-download-county-level-results-data/)) containing the actual election results. We then subtracted the poll results from the actual results to see how much better (or worse) each candidate performed in each state."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 28,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>state</th>\n",
+       "      <th>clinton</th>\n",
+       "      <th>trump</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>Alabama</td>\n",
+       "      <td>34.4</td>\n",
+       "      <td>62.1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>Alaska</td>\n",
+       "      <td>36.6</td>\n",
+       "      <td>51.3</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>Arizona</td>\n",
+       "      <td>45.1</td>\n",
+       "      <td>48.7</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>Arkansas</td>\n",
+       "      <td>33.7</td>\n",
+       "      <td>60.6</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>California</td>\n",
+       "      <td>61.7</td>\n",
+       "      <td>31.6</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "        state  clinton  trump\n",
+       "0     Alabama     34.4   62.1\n",
+       "1      Alaska     36.6   51.3\n",
+       "2     Arizona     45.1   48.7\n",
+       "3    Arkansas     33.7   60.6\n",
+       "4  California     61.7   31.6"
+      ]
+     },
+     "execution_count": 28,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "#Reading in results.csv\n",
+    "results = pd.read_csv('results.csv')\n",
+    "results = results.sort_values('state')\n",
+    "results = results.reset_index(drop=True)\n",
+    "results.head()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 29,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>code</th>\n",
+       "      <th>state</th>\n",
+       "      <th>samplesize</th>\n",
+       "      <th>clinton</th>\n",
+       "      <th>trump</th>\n",
+       "      <th>clinton_pct</th>\n",
+       "      <th>trump_pct</th>\n",
+       "      <th>clinton_diff</th>\n",
+       "      <th>trump_diff</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>AL</td>\n",
+       "      <td>Alabama</td>\n",
+       "      <td>27153.0</td>\n",
+       "      <td>8.992856e+05</td>\n",
+       "      <td>1.570689e+06</td>\n",
+       "      <td>33.119197</td>\n",
+       "      <td>57.845873</td>\n",
+       "      <td>1.280803</td>\n",
+       "      <td>4.254127</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>AK</td>\n",
+       "      <td>Alaska</td>\n",
+       "      <td>12240.0</td>\n",
+       "      <td>4.309978e+05</td>\n",
+       "      <td>5.495426e+05</td>\n",
+       "      <td>35.212235</td>\n",
+       "      <td>44.897274</td>\n",
+       "      <td>1.387765</td>\n",
+       "      <td>6.402726</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>AZ</td>\n",
+       "      <td>Arizona</td>\n",
+       "      <td>69177.0</td>\n",
+       "      <td>2.919496e+06</td>\n",
+       "      <td>3.068696e+06</td>\n",
+       "      <td>42.203272</td>\n",
+       "      <td>44.360056</td>\n",
+       "      <td>2.896728</td>\n",
+       "      <td>4.339944</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>AR</td>\n",
+       "      <td>Arkansas</td>\n",
+       "      <td>17965.0</td>\n",
+       "      <td>6.353103e+05</td>\n",
+       "      <td>9.472248e+05</td>\n",
+       "      <td>35.363781</td>\n",
+       "      <td>52.726123</td>\n",
+       "      <td>-1.663781</td>\n",
+       "      <td>7.873877</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>CA</td>\n",
+       "      <td>California</td>\n",
+       "      <td>103154.0</td>\n",
+       "      <td>5.588077e+06</td>\n",
+       "      <td>3.374816e+06</td>\n",
+       "      <td>54.172181</td>\n",
+       "      <td>32.716288</td>\n",
+       "      <td>7.527819</td>\n",
+       "      <td>-1.116288</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "  code       state  samplesize       clinton         trump  clinton_pct  \\\n",
+       "0   AL     Alabama     27153.0  8.992856e+05  1.570689e+06    33.119197   \n",
+       "1   AK      Alaska     12240.0  4.309978e+05  5.495426e+05    35.212235   \n",
+       "2   AZ     Arizona     69177.0  2.919496e+06  3.068696e+06    42.203272   \n",
+       "3   AR    Arkansas     17965.0  6.353103e+05  9.472248e+05    35.363781   \n",
+       "4   CA  California    103154.0  5.588077e+06  3.374816e+06    54.172181   \n",
+       "\n",
+       "   trump_pct  clinton_diff  trump_diff  \n",
+       "0  57.845873      1.280803    4.254127  \n",
+       "1  44.897274      1.387765    6.402726  \n",
+       "2  44.360056      2.896728    4.339944  \n",
+       "3  52.726123     -1.663781    7.873877  \n",
+       "4  32.716288      7.527819   -1.116288  "
+      ]
+     },
+     "execution_count": 29,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "#Calculating differences between results and polls\n",
+    "df_map['clinton_diff'] = results['clinton'] - df_map['clinton_pct']\n",
+    "df_map['trump_diff'] = results['trump'] - df_map['trump_pct']\n",
+    "df_map.head()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 30,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<iframe id=\"igraph\" scrolling=\"no\" style=\"border:none;\" seamless=\"seamless\" src=\"https://plot.ly/~junseopark/30.embed\" height=\"525px\" width=\"100%\"></iframe>"
+      ],
+      "text/plain": [
+       "<plotly.tools.PlotlyDisplay object>"
+      ]
+     },
+     "execution_count": 30,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "#PLOTTING CLINTON RESULTS COMPARISON MAP\n",
+    "\n",
+    "#Color scale\n",
+    "scl_c = [[0.0, 'red'], [0.5, 'white'], [1.0, 'blue']]\n",
+    "\n",
+    "data = [dict(\n",
+    "        type='choropleth',\n",
+    "        colorscale = scl_c, autocolorscale = False,\n",
+    "        locations = df_map['code'],\n",
+    "        z = df_map['clinton_diff'],\n",
+    "        zmin = -10, zmax =  10,\n",
+    "        locationmode = 'USA-states',\n",
+    "        #text = df['text'],\n",
+    "        marker = dict(\n",
+    "            line = dict (\n",
+    "                color = 'rgb(255,255,255)',\n",
+    "                width = 2\n",
+    "            ) ),\n",
+    "        colorbar = dict(\n",
+    "            title = \"Percentage difference\")\n",
+    "        ) ]\n",
+    "\n",
+    "layout = dict(\n",
+    "        title = 'Clinton Poll + Result difference',\n",
+    "        geo = dict(\n",
+    "            scope='usa',\n",
+    "            projection=dict( type='albers usa' ),\n",
+    "            showlakes = True,\n",
+    "            lakecolor = 'rgb(255, 255, 255)'),\n",
+    "             )\n",
+    "    \n",
+    "fig = dict( data=data, layout=layout )\n",
+    "py.iplot( fig, filename='Clinton Poll + Result difference' )"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 31,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<iframe id=\"igraph\" scrolling=\"no\" style=\"border:none;\" seamless=\"seamless\" src=\"https://plot.ly/~junseopark/32.embed\" height=\"525px\" width=\"100%\"></iframe>"
+      ],
+      "text/plain": [
+       "<plotly.tools.PlotlyDisplay object>"
+      ]
+     },
+     "execution_count": 31,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "#PLOTTING TRUMP RESULTS COMPARISON MAP\n",
+    "\n",
+    "#Color scale\n",
+    "scl_t = [[0.0, 'blue'], [0.5, 'white'], [1.0, 'red']]\n",
+    "\n",
+    "data = [dict(\n",
+    "        type='choropleth',\n",
+    "        colorscale = scl_t, autocolorscale = False,\n",
+    "        locations = df_map['code'],\n",
+    "        z = df_map['trump_diff'],\n",
+    "        zmin = -10, zmax =  10,\n",
+    "        locationmode = 'USA-states',\n",
+    "        #text = df['text'],\n",
+    "        marker = dict(\n",
+    "            line = dict (\n",
+    "                color = 'rgb(255,255,255)',\n",
+    "                width = 2\n",
+    "            ) ),\n",
+    "        colorbar = dict(\n",
+    "            title = \"Percentage difference\")\n",
+    "        ) ]\n",
+    "\n",
+    "layout = dict(\n",
+    "        title = 'Trump Poll + Result difference',\n",
+    "        geo = dict(\n",
+    "            scope='usa',\n",
+    "            projection=dict( type='albers usa' ),\n",
+    "            showlakes = True,\n",
+    "            lakecolor = 'rgb(255, 255, 255)'),\n",
+    "             )\n",
+    "    \n",
+    "fig = dict( data=data, layout=layout )\n",
+    "py.iplot( fig, filename='Trump Poll + Result difference' )"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "From these two graphs, we can see that generally, both candidates performed better across the board. This can be attributed to partisanship; though a voter may not agree with the views of a particular candidate throughout the campaign, the voter is more likely to vote for a candidate simply to support the party and undermine the opposition. But when comparing these percentage boosts for both candidates, we can see that Trump's percentages rose by a larger number and had a bigger influence on the results. This was particularly true in the swing states; while Clinton's results increased around 2%, Trump's percentages in these states rose by around 7% - a substantial lead."
+   ]
+  }
+ ],
+ "metadata": {
+  "anaconda-cloud": {},
+  "celltoolbar": "Raw Cell Format",
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.6.0"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 1
+}
