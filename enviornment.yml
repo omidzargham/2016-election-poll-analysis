@@ -7,3 +7,4 @@ dependencies:
 - pandas=0.20.3
 - python=3.6.2
 - matplotlib=2.0.2
+- seaborn=0.8.0
