@@ -1,0 +1,5 @@
+name: p3env
+channels:
+- defaults
+prefix: /Users/Kenz/anaconda/envs/p3env
+
