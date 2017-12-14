@@ -1,44 +1,39 @@
-# Your Title here
-
-This readme should be written by you, providing a high-level summary for newcomers of what the repository is about, what's where, and what to do to either read the main article or run the various analyses.
-
-You don't need to replicate your main scientific narrative here, a repository README is meant to convey to anyone who finds your repo a few high-level things, for example:
-
-- Purpose of the repository.
-- Basic instructions to use it: what to install, if any, what to run, etc.  This will vary a lot from repo to repo, so use your judgment.
-- A brief description of what is where (e.g. what important directories are included).
-- Licensing conditions.
-
-Look around on Github for inspiration on what people include in their READMEs that you find useful and informative. The [Reproducible Research section](https://github.com/jupyter/jupyter/wiki/A-gallery-of-interesting-Jupyter-Notebooks#reproducible-academic-publications) of the Jupyter Notebook Gallery includes a number of research-oriented links that may be useful.
-
-# Predition of the Election of 2016
+# Prediction of the 2016 Presidential Election
 ## Exploratory Poll Analysis
-
 
 ### Contributors
 + Yizhuang Kang
 + Omid Zargham
 + Ye Zhong
 
-
 ## A brief description of what is where (e.g. what important directories are included).
     (purpose of this project)
 
+- This readme should be written by you, providing a high-level summary for newcomers of what the repository is about, what's where, and what to do to either read the main article or run the various analyses.
 
+You don't need to replicate your main scientific narrative here, a repository README is meant to convey to anyone who finds your repo a few high-level things, for example:
 
+- Basic instructions to use it: Makefile what to install, if any, what to run, etc.  This will vary a lot from repo to repo, so use your judgment.
 
-    
-- Basic instructions to use it: what to install, if any, what to run, etc.  This will vary a lot from repo to repo, so use your judgment.
+## Licensing conditions
+MIT License
 
+Copyright (c) 2017 Reproducible and Collaborative Statistical Data Science
 
-- Licensing conditions.
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-TO DO LIST:
-    - Readme.md
-    - MainNotebook:
-        1.  Summarizes and discusses your results.
-        2.  Discuss the assumptions you can make about the data to justify your analysis.
-        3.  Discuss any changes you made from this plan and why you chose to pursue new questions or modify your original ones. (why diff from hmwk3)
-    - Environment.yml
-    - MAKEFILE
-    -LICENSE
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
