@@ -6,8 +6,16 @@
 + Omid Zargham
 + Ye Zhong
 
-## A brief description of what is where (e.g. what important directories are included).
-    (purpose of this project)
+## Directory Overview
+Datasets are in the /data directory.
+
+    
+    
+```
+make env
+source activate p3env
+make all
+```
 
 - This readme should be written by you, providing a high-level summary for newcomers of what the repository is about, what's where, and what to do to either read the main article or run the various analyses.
 
