@@ -8,7 +8,9 @@ This project explores poll data from the 2016 Presidential Election. We use it t
 
 ## Directory Overview
 Datasets are in the /data directory.
+
 Pandas dataframes used inbetween notebooks are in the /results directory.
+
 Plots are saved in the /fig directory.
 
 To run:
