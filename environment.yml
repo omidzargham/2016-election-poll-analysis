@@ -2,10 +2,11 @@ name: p3env
 channels:
 - defaults
 dependencies:
-- plotly=2.2.3              
 - ply=3.10
 - pandas=0.20.3
 - python=3.6.2
 - matplotlib=2.0.2
 - seaborn=0.8.0
 - numpy=1.13.1
+- pip:
+  - plotly==2.2.3
