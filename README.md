@@ -15,6 +15,24 @@ You don't need to replicate your main scientific narrative here, a repository RE
 
 - Basic instructions to use it: Makefile what to install, if any, what to run, etc.  This will vary a lot from repo to repo, so use your judgment.
 
+## Author Contributions
+Part1(data collection)-Omid
+
+Part2(graphing)-Ye Zhong
+
+Part3(bootstrap)-Omid
+
+Part4(data clean)-Omid
+
+Part5(election results)-Yizhuang Kang
+
+Main ayalysing-Yizhuang & Omid
+
+Environment& Makefiles-Ye Zhong
+
+Liscence&testing function-Omid.
+
+
 ## Licensing conditions
 MIT License
 
