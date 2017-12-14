@@ -1,5 +1,5 @@
-# Prediction of the 2016 Presidential Election
-## Exploratory Poll Analysis
+## Overview
+This project explores poll data from the 2016 Presidential Election. We use it to predict the outcome of the election, and compare it to the actual results.
 
 ### Contributors
 + Yizhuang Kang
@@ -8,20 +8,16 @@
 
 ## Directory Overview
 Datasets are in the /data directory.
+Pandas dataframes used inbetween notebooks are in the /results directory.
+Plots are saved in the /fig directory.
 
-    
-    
+To run:
+
 ```
 make env
 source activate p3env
 make all
 ```
-
-- This readme should be written by you, providing a high-level summary for newcomers of what the repository is about, what's where, and what to do to either read the main article or run the various analyses.
-
-You don't need to replicate your main scientific narrative here, a repository README is meant to convey to anyone who finds your repo a few high-level things, for example:
-
-- Basic instructions to use it: Makefile what to install, if any, what to run, etc.  This will vary a lot from repo to repo, so use your judgment.
 
 ## Author Contributions
 Part1(data collection)-Omid
