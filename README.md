@@ -4,12 +4,6 @@ A data science project with an emphasis on best practices for reproducibility.
 ## Overview
 This project explores poll data from the 2016 Presidential Election. We use it to predict the outcome of the election, and compare it to the actual results.
 
-Datasets are in the /data directory.
-
-Pandas dataframes used inbetween notebooks are in the /results directory.
-
-Plots are saved in the /fig directory.
-
 There are 6 Jupyter notebooks, as follows:
 
 main- overview of the entire project and summary/discussion of results
@@ -23,6 +17,16 @@ Part 3- statistical bootstrapping
 Part 4- exploration of election results dataset
 
 Part 5- comparison of polls and results
+
+## Directory Structure
+
+Datasets are in the /data directory.
+
+Pandas dataframes used inbetween notebooks are in the /results directory.
+
+Plots are saved in the /fig directory.
+
+## Usage
 
 To run, clone the repo and issue the following commands:
 
