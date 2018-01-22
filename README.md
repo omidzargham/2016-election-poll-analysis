@@ -1,43 +1,41 @@
+# 2016-election-poll-analysis
+A data science project with an emphasis on best practices for reproducibility.
+
 ## Overview
 This project explores poll data from the 2016 Presidential Election. We use it to predict the outcome of the election, and compare it to the actual results.
 
-### Contributors
-+ Yizhuang Kang
-+ Omid Zargham
-+ Ye Zhong
-
-## Directory Overview
 Datasets are in the /data directory.
 
 Pandas dataframes used inbetween notebooks are in the /results directory.
 
 Plots are saved in the /fig directory.
 
-To run:
+There are 6 Jupyter notebooks, as follows:
+
+main- overview of the entire project and summary/discussion of results
+
+Part 1- exploration of poll dataset
+
+Part 2- graphs & visualizations
+
+Part 3- statistical bootstrapping 
+
+Part 4- exploration of election results dataset
+
+Part 5- comparison of polls and results
+
+To run, clone the repo and issue the following commands:
 
 ```
 make env
 source activate p3env
 make all
+jupyter notebook
 ```
+To ensure reproducibility of results, these commands will give you a new Conda environment and run all notebooks, resulting in new notebooks with "nbconvert" in their names. These are the ones you should open in Jupyter. 
 
-## Author Contributions
-Part1(data collection)-Omid
-
-Part2(graphing)-Ye Zhong
-
-Part3(bootstrap)-Omid
-
-Part4(data clean)-Omid
-
-Part5(election results)-Yizhuang Kang
-
-Main ayalysing-Yizhuang & Omid
-
-Environment& Makefiles-Ye Zhong
-
-Liscence&testing function-Omid.
-
+## Contributors
+Omid Zargham, Yizhuang Kang, Ye Zhong
 
 ## Licensing conditions
 MIT License
