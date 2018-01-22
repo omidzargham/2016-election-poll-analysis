@@ -18,14 +18,6 @@ Part 4- exploration of election results dataset
 
 Part 5- comparison of polls and results
 
-## Directory Structure
-
-Datasets are in the /data directory.
-
-Pandas dataframes used inbetween notebooks are in the /results directory.
-
-Plots are saved in the /fig directory.
-
 ## Usage
 
 To run, clone the repo and issue the following commands:
@@ -36,7 +28,15 @@ source activate p3env
 make all
 jupyter notebook
 ```
-To ensure reproducibility of results, these commands will give you a new Conda environment and run all notebooks, resulting in new notebooks with "nbconvert" in their names. These are the ones you should open in Jupyter. 
+To ensure reproducibility of results, these commands will give you a new Conda environment and run all notebooks, resulting in new notebooks with "nbconvert" in their names. These are the ones you should open in Jupyter.
+
+## Directory Structure
+
+Datasets are in the /data directory.
+
+Pandas dataframes used inbetween notebooks are in the /results directory.
+
+Plots are saved in the /fig directory.
 
 ## Contributors
 Omid Zargham, Yizhuang Kang, Ye Zhong
